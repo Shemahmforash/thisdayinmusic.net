@@ -1,5 +1,5 @@
-from django.http import HttpResponse
+from django.shortcuts import render
 
 
 def home_page(request):
-    return HttpResponse('<html><title>This Day in Music</title><html>')
+    return render(request, 'home.html')
