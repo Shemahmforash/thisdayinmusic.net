@@ -1,5 +1,9 @@
 from django.shortcuts import render
-
+from events.services.EventService import EventService
 
 def home_page(request):
-    return render(request, 'home.html')
+    events = EventService.events()
+
+    return render(request, 'home.html', {
+        'events': events,
+    })

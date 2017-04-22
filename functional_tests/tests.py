@@ -26,5 +26,8 @@ class MainPageTest(LiveServerTestCase):
             'Events that happened on this day in music...', header_description
         )
 
+    def test_main_page_presents_event_list(self):
+        self.browser.get(self.live_server_url)
+
         event_list = self.browser.find_elements_by_tag_name('li')
         self.assertGreater(len(event_list), 1)

@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "6cef2d2cd71c78ab9020fa5af4054cc1c6e4bdbc3b6ec80ec56cd2f925ef23e0"
+            "sha256": "8846b72bb4f51b2b7a75a098747ed914191ab2094c8c78e097524fad2744a212"
         },
         "requires": {},
         "sources": [
@@ -12,11 +12,14 @@
         ]
     },
     "default": {
-        "django": "==1.11",
-        "psycopg2": "==2.7.1",
+        "django": "*",
+        "psycopg2": {
+            "hash": "sha256:74ee532d6068a1456d5eda254513656c716cdee0a7389c91c094c7ce3500a9c9",
+            "version": "==2.7.1"
+        },
         "selenium": {
-            "hash": "sha256:5e4d78103ac13288a43fc3e750e51e09db6506323c4d1dc5a9cff6fde9d24819",
-            "version": "==3.3.3"
+            "hash": "sha256:6a5f3564503e881bc889e4ad4454fb403353a73dfbdc929530f8598cd1b59e6a",
+            "version": "==3.4.0"
         }
     },
     "develop": {}
