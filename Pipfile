@@ -4,5 +4,6 @@ verify_ssl = true
 
 [packages]
 psycopg2 = "==2.7.1"
-django = "*"
 selenium = ">3"
+requests = "*"
+Django = "*"

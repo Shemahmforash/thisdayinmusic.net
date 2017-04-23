@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "8846b72bb4f51b2b7a75a098747ed914191ab2094c8c78e097524fad2744a212"
+            "sha256": "9f758c43028b717195a8b17cf87b07bf632f436b8db086c0dca67907accb11de"
         },
         "requires": {},
         "sources": [
@@ -12,15 +12,17 @@
         ]
     },
     "default": {
-        "django": "*",
-        "psycopg2": {
-            "hash": "sha256:74ee532d6068a1456d5eda254513656c716cdee0a7389c91c094c7ce3500a9c9",
-            "version": "==2.7.1"
+        "django": {
+            "hash": "sha256:0120b3b60760fb0617848b58aaa9702c0bf963320ed472f0879c5c55ab75b64a",
+            "version": "==1.11"
         },
-        "selenium": {
-            "hash": "sha256:6a5f3564503e881bc889e4ad4454fb403353a73dfbdc929530f8598cd1b59e6a",
-            "version": "==3.4.0"
-        }
+        "psycopg2": "==2.7.1",
+        "pytz": {
+            "hash": "sha256:d1d6729c85acea5423671382868627129432fba9a89ecbb248d8d1c7a9f01c67",
+            "version": "==2017.2"
+        },
+        "requests": "*",
+        "selenium": ">3"
     },
     "develop": {}
 }
