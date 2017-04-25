@@ -32,6 +32,51 @@ class EventServiceTest(TestCase):
             requests_mock.call_args_list
         )
 
+    @mock.patch('events.services.EventService.requests.get')
+    def test_events_with_day_args_api_is_called_with_no_args(
+            self, requests_mock):
+        # given I call events with day
+        EventService.events(day=10)
+
+        # then the api is reached without query parameters
+        self.assertIn(
+            mock.call(
+                'http://thisdayinmusic.icdif.com/api/v0.1/event',
+                params=None
+            ),
+            requests_mock.call_args_list
+        )
+
+    @mock.patch('events.services.EventService.requests.get')
+    def test_events_with_month_args_api_is_called_with_no_args(
+            self, requests_mock):
+        # given I call events with month
+        EventService.events(month=10)
+
+        # then the api is reached without query parameters
+        self.assertIn(
+            mock.call(
+                'http://thisdayinmusic.icdif.com/api/v0.1/event',
+                params=None
+            ),
+            requests_mock.call_args_list
+        )
+
+    @mock.patch('events.services.EventService.requests.get')
+    def test_events_with_day_and_month_args_api_is_called_with_day_and_month(
+            self, requests_mock):
+        # given I call events with day and month
+        EventService.events(month=10, day=20)
+
+        # then the api is reached with day and month as query parameters
+        self.assertIn(
+            mock.call(
+                'http://thisdayinmusic.icdif.com/api/v0.1/event',
+                params={'day': 20, 'month': 10}
+            ),
+            requests_mock.call_args_list
+        )
+
     @mock.patch('events.services.EventService.requests.models.Response.json',
                 return_value={"response": {"events": [{}]}})
     def test_when_api_returns_results_events_should_return_them(
