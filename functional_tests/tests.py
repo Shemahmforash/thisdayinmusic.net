@@ -29,5 +29,5 @@ class MainPageTest(LiveServerTestCase):
     def test_main_page_presents_event_list(self):
         self.browser.get(self.live_server_url)
 
-        event_list = self.browser.find_elements_by_tag_name('li')
+        event_list = self.browser.find_elements_by_tag_name('h2')
         self.assertGreater(len(event_list), 1)

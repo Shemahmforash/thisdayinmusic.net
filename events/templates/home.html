@@ -2,5 +2,15 @@
     <title>This Day in Music</title>
     <body>
         <h1>This Day in Music <small>Events that happened on this day in music...</small></h1>
+		{% for event in events %}
+			<div>
+				<h2>
+					{{ event.date }}
+				</h2>
+				<p>
+					{{ event.description }}
+				</p>
+			</div>
+		{% endfor %}
     </body>
 <html>
