@@ -16,8 +16,10 @@ class HomePageTest(TestCase):
 
 
 class EventServiceTest(TestCase):
+
     @mock.patch('events.services.EventService.requests.get')
-    def test_events_with_no_args_assumes_today(self, requests_mock):
+    def test_events_with_no_args_api_is_called_with_no_args(
+            self, requests_mock):
         # given I call events with no args
         EventService.events()
 
@@ -29,3 +31,16 @@ class EventServiceTest(TestCase):
             ),
             requests_mock.call_args_list
         )
+
+    @mock.patch('events.services.EventService.requests.models.Response.json',
+                return_value={"response": {"events": [{}]}})
+    def test_when_api_returns_results_events_should_return_them(
+            self, response_json):
+        # given that the api responds with a json
+        result = EventService.events()
+
+        # then a dictionary is returned
+        self.assertEqual(type(result), dict)
+
+        # with the right keys
+        self.assertEqual(result['response'], {"events": [{}]})
