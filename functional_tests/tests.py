@@ -1,4 +1,5 @@
 from django.test import LiveServerTestCase
+from datetime import datetime
 from selenium import webdriver
 
 
@@ -14,13 +15,20 @@ class MainPageTest(LiveServerTestCase):
 
         self.assertIn('This Day in Music', self.browser.title)
 
-        #  brand_text = self.browser.find_element_by_class_name(
-        #  'navbar-brand'
-        #  ).text
-        #  self.assertIn('This Day In Music', brand_text)
+        today = datetime.now()
+
+        header = self.browser.find_element_by_xpath(
+            '/html/body/h1'
+        ).text
+        self.assertIn(
+            today.strftime('%d'), header
+        )
+        self.assertIn(
+           today.strftime("%B"), header
+        )
 
         header_description = self.browser.find_element_by_xpath(
-            '/html/body/h1/small'
+            '/html/body/h2'
         ).text
         self.assertIn(
             'Events that happened on this day in music...', header_description
@@ -29,5 +37,5 @@ class MainPageTest(LiveServerTestCase):
     def test_main_page_presents_event_list(self):
         self.browser.get(self.live_server_url)
 
-        event_list = self.browser.find_elements_by_tag_name('h2')
+        event_list = self.browser.find_elements_by_tag_name('h3')
         self.assertGreater(len(event_list), 1)

@@ -1,12 +1,13 @@
 <html>
     <title>This Day in Music</title>
     <body>
-        <h1>This Day in Music <small>Events that happened on this day in music...</small></h1>
+        <h1>{% now "F, d" %}</h1>
+        <h2>Events that happened on this day in music...</h2>
 		{% for event in events %}
 			<div>
-				<h2>
+				<h3>
 					{{ event.date }}
-				</h2>
+				</h3>
 				<p>
 					{{ event.description }}
 				</p>
