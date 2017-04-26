@@ -18,4 +18,6 @@ from events import views
 
 urlpatterns = [
     url(r'^$', views.home_page, name='home'),
+    url(r'^events/(?P<month>\w+)/(?P<day>\d{2})$',
+        views.events_page, name="events"),
 ]
