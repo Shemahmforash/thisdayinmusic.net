@@ -1,4 +1,5 @@
 import requests
+from datetime import datetime
 
 
 class EventService:
@@ -6,7 +7,13 @@ class EventService:
         payload = None
 
         if(month is not None and day is not None):
-            payload = {'day': day, 'month': month}
+            date = datetime.strptime(
+                    '{} {}'.format(day, month), '%d %B')
+
+            payload = {
+                'day': date.strftime('%d'),
+                'month': date.strftime('%m')
+            }
 
         result = requests.get(
             'http://thisdayinmusic.icdif.com/api/v0.1/event',
