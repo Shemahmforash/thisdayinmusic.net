@@ -16,7 +16,7 @@ def home_page(request):
 def events_page(request, month, day):
     events = EventService.events(month, day)
     date = datetime.strptime(
-            '{} {}'.format(day, month), '%d %B')
+        '{} {}'.format(day, month), '%d %B')
 
     return render(request, 'home.html', {
         'events': events['response']['events'],

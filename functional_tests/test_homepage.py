@@ -4,6 +4,7 @@ from selenium import webdriver
 
 
 class MainPageTest(LiveServerTestCase):
+
     def setUp(self):
         self.browser = webdriver.Firefox()
 
@@ -24,7 +25,7 @@ class MainPageTest(LiveServerTestCase):
             today.strftime('%d'), header
         )
         self.assertIn(
-           today.strftime("%B"), header
+            today.strftime("%B"), header
         )
 
         header_description = self.browser.find_element_by_xpath(

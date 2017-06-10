@@ -3,12 +3,13 @@ from datetime import datetime
 
 
 class EventService:
+
     def events(month=None, day=None):
         payload = None
 
         if(month is not None and day is not None):
             date = datetime.strptime(
-                    '{} {}'.format(day, month), '%d %B')
+                '{} {}'.format(day, month), '%d %B')
 
             payload = {
                 'day': date.strftime('%d'),

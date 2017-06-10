@@ -5,6 +5,7 @@ import random
 
 
 class EventsPageTest(LiveServerTestCase):
+
     def setUp(self):
         self.browser = webdriver.Firefox()
 
@@ -14,7 +15,7 @@ class EventsPageTest(LiveServerTestCase):
     @staticmethod
     def given_a_random_date():
         return datetime.strptime(
-                '{} {}'.format(random.randint(1, 366), 2017), '%j %Y')
+            '{} {}'.format(random.randint(1, 366), 2017), '%j %Y')
 
     def test_can_open_events_page(self):
         date = self.given_a_random_date()
