@@ -4,3 +4,4 @@ geckodriver.log
 __pycache__
 
 .DS_STORE
+.env

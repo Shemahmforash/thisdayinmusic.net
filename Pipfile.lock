@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "978af182fe800278281ef2a8c59b64b10f8ad69bef4f6260326211ad1c9deed6"
+            "sha256": "55bdacce2a58ac7cce93a60385c174b0fbf51d99632683db4a1c23da009f1d27"
         },
         "requires": {},
         "sources": [
@@ -12,25 +12,30 @@
         ]
     },
     "default": {
-        "Django": {
-            "hash": "sha256:cbd3944599086518cdcf3235e90230c8b8a9c5476b20447ee57b313dba14f67a",
-            "version": "==1.11.2"
-        },
         "certifi": {
             "hash": "sha256:f4318671072f030a33c7ca6acaef720ddd50ff124d1388e50c1bda4cbd6d7010",
             "version": "==2017.4.17"
         },
         "chardet": {
-            "hash": "sha256:8da3f329e2c5779247f4cff7081512c531731ef6a9c6ef78084e8ed8d18226c7",
-            "version": "==3.0.3"
+            "hash": "sha256:fc323ffcaeaed0e0a02bf4d117757b98aed530d9ed4531e3e15460124c106691",
+            "version": "==3.0.4"
+        },
+        "click": {
+            "hash": "sha256:29f99fc6125fbc931b758dc053b3114e55c77a6e4c6c3a2674a2dc986016381d",
+            "version": "==6.7"
+        },
+        "django": {
+            "hash": "sha256:cbd3944599086518cdcf3235e90230c8b8a9c5476b20447ee57b313dba14f67a",
+            "version": "==1.11.2"
         },
         "idna": {
             "hash": "sha256:cc19709fd6d0cbfed39ea875d29ba6d4e22c0cebc510a76d6302a28385e8bb70",
             "version": "==2.5"
         },
-        "psycopg2": {
-            "hash": "sha256:38ff8f65deb947a7499f24ceb5b40db24540027fdf7d927f4d2aab35fbbdd6b0",
-            "version": "==2.7.1"
+        "psycopg2": "==2.7.1",
+        "python-dotenv": {
+            "hash": "sha256:bac21323df7ab51765948442392872e0ad89cc5c9122ab7f41bd8ad689fc7c72",
+            "version": "==0.6.4"
         },
         "pytz": {
             "hash": "sha256:d1d6729c85acea5423671382868627129432fba9a89ecbb248d8d1c7a9f01c67",
@@ -40,10 +45,7 @@
             "hash": "sha256:baf701b4a9d4cbe40169e8ab77816f7abadbad502ba459c30f7a2bc138e4d612",
             "version": "==2.17.3"
         },
-        "selenium": {
-            "hash": "sha256:9e4885e7c72e20126b22ce5fc5981bbedd80bff99474c0757f62d5e68e1f17ac",
-            "version": "==3.4.3"
-        },
+        "selenium": ">3",
         "urllib3": {
             "hash": "sha256:8ed6d5c1ff9d6ba84677310060d6a3a78ca3072ce0684cb3c645023009c114b1",
             "version": "==1.21.1"
