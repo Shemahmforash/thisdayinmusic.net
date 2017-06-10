@@ -4,6 +4,8 @@ from datetime import datetime
 
 class EventService:
 
+    API_ADDRESS = "http://thisdayinmusic.icdif.com/api/v0.1/event"
+
     def events(month=None, day=None):
         payload = None
 
@@ -17,7 +19,7 @@ class EventService:
             }
 
         result = requests.get(
-            'http://thisdayinmusic.icdif.com/api/v0.1/event',
+            EventService.API_ADDRESS,
             params=payload
         )
 

@@ -41,7 +41,7 @@ class EventServiceTest(TestCase):
         # then the api is reached without query parameters
         self.assertIn(
             mock.call(
-                'http://thisdayinmusic.icdif.com/api/v0.1/event',
+                EventService.API_ADDRESS,
                 params=None
             ),
             requests_mock.call_args_list
@@ -56,7 +56,7 @@ class EventServiceTest(TestCase):
         # then the api is reached without query parameters
         self.assertIn(
             mock.call(
-                'http://thisdayinmusic.icdif.com/api/v0.1/event',
+                EventService.API_ADDRESS,
                 params=None
             ),
             requests_mock.call_args_list
@@ -71,7 +71,7 @@ class EventServiceTest(TestCase):
         # then the api is reached without query parameters
         self.assertIn(
             mock.call(
-                'http://thisdayinmusic.icdif.com/api/v0.1/event',
+                EventService.API_ADDRESS,
                 params=None
             ),
             requests_mock.call_args_list
@@ -86,7 +86,7 @@ class EventServiceTest(TestCase):
         # then the api is reached with day and month as query parameters
         self.assertIn(
             mock.call(
-                'http://thisdayinmusic.icdif.com/api/v0.1/event',
+                EventService.API_ADDRESS,
                 params={'day': '01', 'month': '04'}
             ),
             requests_mock.call_args_list
