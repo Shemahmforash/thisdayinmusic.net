@@ -5,7 +5,6 @@ import random
 
 
 class EventsPageTest(LiveServerTestCase):
-
     def setUp(self):
         self.browser = webdriver.Firefox()
 
@@ -41,3 +40,6 @@ class EventsPageTest(LiveServerTestCase):
         self.assertIn(
             'Events that happened on this day in music...', header_description
         )
+
+        pagination = self.browser.find_element_by_class_name('pagination')
+        self.assertIsNotNone(pagination)

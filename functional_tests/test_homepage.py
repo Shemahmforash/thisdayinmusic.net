@@ -40,3 +40,9 @@ class MainPageTest(LiveServerTestCase):
 
         event_list = self.browser.find_elements_by_tag_name('h3')
         self.assertGreater(len(event_list), 1)
+
+    def test_main_page_presents_pagination(self):
+        self.browser.get(self.live_server_url)
+
+        pagination = self.browser.find_element_by_class_name('pagination')
+        self.assertIsNotNone(pagination)
