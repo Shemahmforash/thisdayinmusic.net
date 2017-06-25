@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "ea3b44602fe0254d9f68461a80022cdbc21ca851867709e0be79a009a3e5ea8e"
+            "sha256": "e396bc59c545aeabcef90b7ee1fb542c190925d992c184a550235637e6066d16"
         },
         "requires": {},
         "sources": [
@@ -12,20 +12,30 @@
         ]
     },
     "default": {
+        "argparse": {
+            "version": "==1.4.0"
+        },
+        "bottle": {
+            "version": "==0.12.13"
+        },
         "click": {
             "version": "==6.7"
         },
-        "django": ">1.11",
-        "psycopg2": {
-            "version": "==2.7.1"
+        "django": {
+            "version": "==1.11.2"
         },
+        "pretenders": {
+            "version": "==1.4.3"
+        },
+        "psycopg2": "==2.7.1",
         "python-dotenv": {
             "version": "==0.6.4"
         },
+        "pytz": {
+            "version": "==2017.2"
+        },
         "requests": ">2.17",
-        "selenium": {
-            "version": "==3.4.3"
-        }
+        "selenium": ">3"
     },
     "develop": {}
 }

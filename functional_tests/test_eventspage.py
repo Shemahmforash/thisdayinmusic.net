@@ -1,5 +1,7 @@
+import requests_mock
 from django.test import LiveServerTestCase
 from datetime import datetime
+from django.conf import settings
 from selenium import webdriver
 import random
 
@@ -16,8 +18,28 @@ class EventsPageTest(LiveServerTestCase):
         return datetime.strptime(
             '{} {}'.format(random.randint(1, 366), 2017), '%j %Y')
 
-    def test_can_open_events_page(self):
+    @requests_mock.Mocker()
+    def test_can_open_events_page(self, m):
         date = self.given_a_random_date()
+
+        m.get(settings.API_BASE_ADDRESS + '/event/?offset=0&month=' + date.strftime('%m') + '&day=' + date.strftime('%d'),
+              json={
+                  "response": {
+                      "status": {
+                          "version": 0.1,
+                          "code": 0,
+                          "status": "Success"
+                      },
+                      "events": [
+                      ],
+                      "pagination": {
+                          "total": 59,
+                          "offset": 0,
+                          "results": 15
+                      }
+                  }
+              }, status_code=200)
+
         month = date.strftime('%B')
         day = date.strftime("%d")
 
@@ -43,3 +65,39 @@ class EventsPageTest(LiveServerTestCase):
 
         pagination = self.browser.find_element_by_class_name('pagination')
         self.assertIsNotNone(pagination)
+
+    @requests_mock.Mocker()
+    def test_events_page_presents_event_list(self, m):
+        date = self.given_a_random_date()
+
+        m.get(settings.API_BASE_ADDRESS + '/event/?offset=0&month=' + date.strftime('%m') + '&day=' + date.strftime('%d'),
+              json={
+                  "response": {
+                      "status": {
+                          "version": 0.1,
+                          "code": 0,
+                          "status": "Success"
+                      },
+                      "events": [
+                          {
+                              "date": "1909-06-27",
+                              "description": "Gianandrea Gavazzeni, composer was born",
+                              "type": "Birth"
+                          },
+                      ],
+                      "pagination": {
+                          "total": 59,
+                          "offset": 0,
+                          "results": 15
+                      }
+                  }
+              }, status_code=200)
+
+        month = date.strftime('%B')
+        day = date.strftime("%d")
+
+        self.browser.get('%s%s%s/%s' % (
+            self.live_server_url, '/events/', month, day))
+
+        event_list = self.browser.find_elements_by_tag_name('h3')
+        self.assertEqual(len(event_list), 1)

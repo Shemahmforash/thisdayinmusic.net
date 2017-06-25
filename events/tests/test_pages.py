@@ -6,7 +6,8 @@ from events.tests.utils import given_a_random_page
 
 
 class PagesTest(TestCase):
-    def test_uses_home_template(self):
+    @mock.patch('events.services.EventService.EventService.events')
+    def test_uses_home_template(self, mocked):
         response = self.client.get('/')
         self.assertTemplateUsed(response, 'home.html')
 
