@@ -144,3 +144,16 @@ class EventServiceTest(TestCase):
 
         # with the right keys
         self.assertEqual(result['response'], {"events": [{}]})
+
+    @mock.patch('events.services.EventService.requests.get')
+    def test_playlist_calls_the_right_api(self, requests_mock):
+
+        # given I call events with no args
+        self.service.playlist()
+
+        # then the api is reached without query parameters
+        self.assertIn(
+            mock.call(
+                ANY,
+            ),
+            requests_mock.call_args_list)

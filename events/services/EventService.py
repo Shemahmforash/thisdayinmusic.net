@@ -29,5 +29,14 @@ class EventService:
 
         return result.json()
 
+    def playlist(self):
+        address = '%s/playlist/' % self.base_address
+
+        result = requests.get(
+            address,
+        )
+
+        return result.json()
+
     def offset(self, page):
         return self.RESULTS_PER_PAGE * (page - 1) if page and page > 0 else 0

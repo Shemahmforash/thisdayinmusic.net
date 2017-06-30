@@ -1,0 +1,24 @@
+<html>
+<title>Playlist a day for {{ date|date:"F, d" }}</title>
+<body>
+<h1>{{ date|date:"F, d" }}</h1>
+
+<h2>Playlist based on the events that happened on this day in music...</h2>
+{% if playlist %}
+    <div class="playlist">
+
+        <ol>
+            {% for track in playlist %}
+                <li>
+                    {{ track.event }}
+                </li>
+            {% endfor %}
+        </ol>
+
+    </div>
+{% endif %}
+
+<iframe src="https://embed.spotify.com/?uri=spotify:trackset:Playlist a Day for {{ date }}:{{ spotify_playlist }}"
+        style="width:640px; height:520px;" frameborder="0" allowtransparency="true"></iframe>
+</body>
+</html>

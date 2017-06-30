@@ -49,3 +49,9 @@ class PagesTest(TestCase):
             mock_event_service_get.call_args_list
         )
 
+    @mock.patch('events.services.EventService.EventService.playlist')
+    def test_home_page_calls_event_service(self, mock_event_service_get):
+        self.client.get('/playlist')
+
+        self.assertTrue(mock_event_service_get.called)
+
