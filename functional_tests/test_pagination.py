@@ -37,7 +37,7 @@ class PaginationTest(LiveServerTestCase):
 
         active_page = pagination.find_element_by_class_name('active').text
 
-        self.assertIn('1 (current)', active_page)
+        self.assertIn('1\n(current)', active_page)
 
     @requests_mock.Mocker()
     def test_events_page_presents_pagination(self, m):
@@ -64,7 +64,7 @@ class PaginationTest(LiveServerTestCase):
 
         active_page = pagination.find_element_by_class_name('active').text
 
-        self.assertIn('1 (current)', active_page)
+        self.assertIn('1\n(current)', active_page)
 
     @requests_mock.Mocker()
     def test_main_page_has_correct_page_selected(self, m):
@@ -91,7 +91,7 @@ class PaginationTest(LiveServerTestCase):
 
         active_page = pagination.find_element_by_class_name('active').text
 
-        self.assertIn('2 (current)', active_page)
+        self.assertIn('2\n(current)', active_page)
 
     @requests_mock.Mocker()
     def test_events_page_has_correct_page_selected(self, m):
@@ -120,4 +120,4 @@ class PaginationTest(LiveServerTestCase):
 
         active_page = pagination.find_element_by_class_name('active').text
 
-        self.assertIn('3 (current)', active_page)
+        self.assertIn('3\n(current)', active_page)

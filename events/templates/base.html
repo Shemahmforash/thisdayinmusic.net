@@ -1,0 +1,23 @@
+{% load staticfiles %}
+<html>
+    <head>
+        <title>{% block title %}This Day In Music{% endblock %}</title>
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+        <link href='//fonts.googleapis.com/css?family=Lobster&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+{#        <link rel="stylesheet" href="{% static 'css/blog.css' %}">#}
+    </head>
+    <body>
+
+        {% block content %}
+        {% endblock %}
+
+        <footer>
+            <div class="container">
+                <a href="http://the.echonest.com" target="_blank">
+                    <img src="/img/EN_P_on_Dark_Transparent.png" title="Powered by Echonest" alt="Powered by Echonest" class="center-block"/>
+                </a>
+            </div>
+        </footer>
+    </body>
+</html>

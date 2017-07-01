@@ -19,22 +19,15 @@ class PlaylistPageTests(LiveServerTestCase):
         today = datetime.now()
 
         date_text = '%s, %s' % (today.strftime('%B'), today.strftime('%d'))
-
-        header = self.browser.find_element_by_xpath(
-            '/html/body/h1'
-        ).text
-
-        self.assertIn(
-            date_text, header
-        )
         self.assertIn('Playlist a day for %s' % date_text, self.browser.title)
 
-        header_description = self.browser.find_element_by_xpath(
-            '/html/body/h2'
-        ).text
+        header = self.browser.find_element_by_class_name(
+            'page-header'
+        ).find_element_by_tag_name('h1').text
+
         self.assertIn(
             'Playlist based on the events that happened on this day in music...',
-            header_description
+            header
         )
 
     @requests_mock.Mocker()
@@ -70,15 +63,15 @@ class PlaylistPageTests(LiveServerTestCase):
 
         self.browser.get(self.live_server_url + '/playlist')
 
-        track_container = self.browser.find_element_by_class_name('playlist')
+        track_container = self.browser.find_element_by_class_name('well')
         self.assertIsNotNone(track_container)
 
         tracks = track_container.find_elements_by_tag_name('li')
         self.assertEqual(len(tracks), 2)
 
-        self.assertEqual(tracks[0].text, "1951-06-30 - [Birth] Andre Hazes, Dutch barkeeper/singer (We Love Orange) was born")
+        self.assertEqual(tracks[0].text,
+                         "1951-06-30 - [Birth] Andre Hazes, Dutch barkeeper/singer (We Love Orange) was born")
         self.assertEqual(tracks[1].text, "1949-06-30 - [Birth] Andrew Scott, Wales, rock guitarist (Sweet) was born")
-
 
     @requests_mock.Mocker()
     def test_playlist_page_shows_spotify_playlist(self, m):
@@ -113,7 +106,7 @@ class PlaylistPageTests(LiveServerTestCase):
 
         self.browser.get(self.live_server_url + '/playlist')
 
-        spotify_playlist = self.browser.find_element_by_tag_name('iframe')
+        spotify_playlist = self.browser.find_element_by_id('spotify-playlist')
         self.assertIsNotNone(spotify_playlist)
 
         src = spotify_playlist.get_attribute('src')

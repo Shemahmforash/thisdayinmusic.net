@@ -38,9 +38,9 @@ class MainPageTest(LiveServerTestCase):
 
         today = datetime.now()
 
-        header = self.browser.find_element_by_xpath(
-            '/html/body/h1'
-        ).text
+        header = self.browser.find_element_by_class_name(
+            'page-header'
+        ).find_element_by_tag_name('h1').text
         self.assertIn(
             today.strftime('%d'), header
         )
@@ -48,11 +48,8 @@ class MainPageTest(LiveServerTestCase):
             today.strftime("%B"), header
         )
 
-        header_description = self.browser.find_element_by_xpath(
-            '/html/body/h2'
-        ).text
         self.assertIn(
-            'Events that happened on this day in music...', header_description
+            'Events that happened on this day in music...', header
         )
 
     @requests_mock.Mocker()
@@ -85,6 +82,6 @@ class MainPageTest(LiveServerTestCase):
         }, status_code=200)
         self.browser.get(self.live_server_url)
 
-        event_list = self.browser.find_elements_by_tag_name('h3')
+        event_list = self.browser.find_elements_by_class_name('well')
         self.assertEqual(len(event_list), 2)
 

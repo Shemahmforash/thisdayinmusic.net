@@ -48,19 +48,16 @@ class EventsPageTest(LiveServerTestCase):
 
         self.assertIn('This Day in Music', self.browser.title)
 
-        header = self.browser.find_element_by_xpath(
-            '/html/body/h1'
-        ).text
+        header = self.browser.find_element_by_class_name(
+            'page-header'
+        ).find_element_by_tag_name('h1').text
         self.assertIn(
             day, header
         )
         self.assertIn(month, header)
 
-        header_description = self.browser.find_element_by_xpath(
-            '/html/body/h2'
-        ).text
         self.assertIn(
-            'Events that happened on this day in music...', header_description
+            'Events that happened on this day in music...', header
         )
 
         pagination = self.browser.find_element_by_class_name('pagination')
@@ -99,5 +96,5 @@ class EventsPageTest(LiveServerTestCase):
         self.browser.get('%s%s%s/%s' % (
             self.live_server_url, '/events/', month, day))
 
-        event_list = self.browser.find_elements_by_tag_name('h3')
+        event_list = self.browser.find_elements_by_class_name('well')
         self.assertEqual(len(event_list), 1)
