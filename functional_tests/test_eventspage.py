@@ -5,6 +5,8 @@ from django.conf import settings
 from selenium import webdriver
 import random
 
+from functional_tests.utils import navbar_active_element_text
+
 
 class EventsPageTest(LiveServerTestCase):
     def setUp(self):
@@ -59,6 +61,9 @@ class EventsPageTest(LiveServerTestCase):
         self.assertIn(
             'Events that happened on this day in music...', header
         )
+
+        active_element = navbar_active_element_text(self.browser)
+        self.assertIn("Events", active_element)
 
         pagination = self.browser.find_element_by_class_name('pagination')
         self.assertIsNotNone(pagination)

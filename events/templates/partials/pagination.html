@@ -1,0 +1,29 @@
+<ul class="pagination">
+
+    {% if current_page == 1 %}
+        <li class="disabled"><a href="#">«</a></li>
+    {% else %}
+        <li>
+            <a href="{{ request.path }}?page={{ current_page|add:"-1" }}">«</a>
+        </li>
+    {% endif %}
+
+    {% for page in pages %}
+        {% if current_page == page %}
+            <li class="active">
+                                <span>
+                                    {{ page }}
+                                    <span class="sr-only">(current)</span>
+                                </span>
+            </li>
+        {% else %}
+            <li><a href="{{ request.path }}?page={{ page }}">{{ page }}</a></li>
+        {% endif %}
+    {% endfor %}
+
+    {% if current_page == pages|length %}
+        <li class="disabled"><a href="#">»</a></li>
+    {% else %}
+        <li><a href="{{ request.path }}?page={{ current_page|add:"1" }}">»</a></li>
+    {% endif %}
+</ul>

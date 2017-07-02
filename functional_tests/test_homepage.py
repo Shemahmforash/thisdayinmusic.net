@@ -4,6 +4,8 @@ from django.test import LiveServerTestCase
 from datetime import datetime
 from selenium import webdriver
 
+from functional_tests.utils import navbar_active_element_text
+
 
 class MainPageTest(LiveServerTestCase):
 
@@ -51,6 +53,10 @@ class MainPageTest(LiveServerTestCase):
         self.assertIn(
             'Events that happened on this day in music...', header
         )
+
+        active_element = navbar_active_element_text(self.browser)
+        self.assertIn("Events", active_element)
+
 
     @requests_mock.Mocker()
     def test_main_page_presents_event_list(self, m):
