@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    This Day in Music
+{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+        <div class="row clearfix">
+            <div class="col-md-12 column">
+
+                {% include "partials/navbar.html" with active="about" %}
+
+                <div class="jumbotron">
+                    <h1>This Day in Music</h1>
+                    <p>
+                        This project was created with the purpose of presenting the events that happened in this day
+                        during
+                        the history of music as well as providing daily playlists based on those same events.
+                    </p>
+                    <p>
+                        Besides this site, it was created a twitter account <a
+                            href="https://twitter.com/today_in_music">@today_in_music</a> in order to allow one to
+                        follow the events and the playlists easily.
+                    </p>
+                    <p>
+                        The code of this project is available online at the following repositories <a
+                            href="https://github.com/Shemahmforash/APlaylistADay">https://github.com/Shemahmforash/APlaylistADay</a>
+                        and <a href="https://github.com/Shemahmforash/ThisDayInMusic">https://github.com/Shemahmforash/ThisDayInMusic</a>.
+                        Feel free to fork them and help me.
+                    </p>
+                    <p>
+                        If you have any doubt or suggestion, you can reach me at: cmrosao [ at ] gmail [dot] com or at
+                        <a href="https://twitter.com/shemahmforash">@shemahmforash</a>.
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

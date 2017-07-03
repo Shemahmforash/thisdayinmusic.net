@@ -21,4 +21,5 @@ urlpatterns = [
     url(r'^events/(?P<month>\w+)/(?P<day>\d{2})$',
         views.events_page, name="events"),
     url(r'^playlist$', views.playlist_page, name='playlist'),
+    url(r'^about$', views.about_page, name='about'),
 ]

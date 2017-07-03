@@ -58,6 +58,10 @@ def playlist_page(request):
         'spotify_playlist': spotify_playlist
     })
 
+def about_page(request):
+    return render(request, 'about.html')
+
+
 
 def _get_current_page(request):
     return int(request.GET.get('page', 1))
