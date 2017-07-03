@@ -1,0 +1,25 @@
+/*required by navbar fixed on top*/
+body { padding-top: 70px; }
+
+#dp1 {
+    margin-top: 12px;
+    margin-left: 20px;
+}
+
+.twitter_follow {
+    margin-top: 15px;
+    margin-left: 40px;
+}
+
+.tweet {
+    float: right;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+/* Set the fixed height of the footer here */
+#footer {
+  height: 60px;
+  background-color: #222;
+  padding-top: 17px;
+}
