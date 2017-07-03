@@ -7,9 +7,23 @@ from events.tests.utils import given_a_random_page
 
 class PagesTest(TestCase):
     @mock.patch('events.services.EventService.EventService.events')
-    def test_uses_home_template(self, mocked):
+    def test_homepage_uses_home_template(self, mocked):
         response = self.client.get('/')
         self.assertTemplateUsed(response, 'home.html')
+
+    @mock.patch('events.services.EventService.EventService.events')
+    def test_eventspage_uses_home_template(self, mocked):
+        response = self.client.get('/events/April/25')
+        self.assertTemplateUsed(response, 'home.html')
+
+    @mock.patch('events.services.EventService.EventService.playlist')
+    def test_playlistpage_uses_playlist_template(self, mocked):
+        response = self.client.get('/playlist')
+        self.assertTemplateUsed(response, 'playlist.html')
+
+    def test_aboutpage_uses_about_template(self):
+        response = self.client.get('/about')
+        self.assertTemplateUsed(response, 'about.html')
 
     @mock.patch('events.services.EventService.EventService.events')
     def test_home_page_calls_event_service(self, mock_event_service_get):
