@@ -4,6 +4,7 @@ from datetime import datetime
 
 class EventService:
     RESULTS_PER_PAGE = 15
+    DEFAULT_FIELDS = ['artist', 'date', 'description', 'type']
 
     def __init__(self, base_address):
         self.base_address = base_address
@@ -12,7 +13,8 @@ class EventService:
         address = '%s/event/' % self.base_address
 
         payload = {
-           'offset': self.offset(page)
+            'offset': self.offset(page),
+            'fields[]': self.DEFAULT_FIELDS
         }
 
         if month is not None and day is not None:

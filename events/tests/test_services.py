@@ -31,57 +31,62 @@ class EventServiceTest(TestCase):
     def test_that_offset_is_equal_to_the_number_of_results_per_page_for_page_2(self):
         page = 2
 
-        self.assertEqual(self.service.RESULTS_PER_PAGE, self.service.offset(page))
+        self.assertEqual(15, self.service.offset(page))
+
+    def test_that_offset_is_equal_to_twice_the_number_of_results_per_page_for_page_3(self):
+        page = 3
+
+        self.assertEqual(30, self.service.offset(page))
 
     @mock.patch('events.services.EventService.requests.get')
-    def test_events_with_no_args_api_is_called_with_no_args(
+    def test_events_with_no_args_api_is_called_with_default_args(
             self, requests_mock):
         # given I call events with no args
         self.service.events()
 
-        # then the api is reached without query parameters
+        # then the api is reached with default query parameters
         self.assertIn(
             mock.call(
                 ANY,
-                params={'offset': 0}
+                params={'offset': 0, 'fields[]': ['artist', 'date', 'description', 'type']}
             ),
             requests_mock.call_args_list
         )
 
     @mock.patch('events.services.EventService.requests.get')
-    def test_events_with_day_args_api_is_called_with_no_args(
+    def test_events_with_day_args_api_is_called_with_default_args(
             self, requests_mock):
         # given I call events with day
         self.service.events(day=10)
 
-        # then the api is reached without query parameters
+        # then the api is reached with default query parameters
         self.assertIn(
             mock.call(
                 ANY,
-                params={'offset': 0}
+                params={'offset': 0, 'fields[]': ['artist', 'date', 'description', 'type']}
             ),
             requests_mock.call_args_list
         )
 
     @mock.patch('events.services.EventService.requests.get')
-    def test_events_with_month_args_api_is_called_with_no_args(
+    def test_events_with_month_args_api_is_called_with_default_args(
             self, requests_mock):
         # given I call events with month
         self.service.events(month='April')
 
-        # then the api is reached without query parameters
+        # then the api is reached with default query parameters
         self.assertIn(
             mock.call(
                 ANY,
-                params={'offset': 0}
+                params={'offset': 0, 'fields[]': ['artist', 'date', 'description', 'type']}
             ),
             requests_mock.call_args_list
         )
 
     @mock.patch('events.services.EventService.requests.get')
-    def test_events_with_page_args_api_is_called_with_offset_args(
+    def test_events_with_page_args_api_is_called_with_the_right_offset_args(
             self, requests_mock):
-        page = 1
+        page = 2
 
         # given I call events with no args
         self.service.events(page=page)
@@ -90,7 +95,7 @@ class EventServiceTest(TestCase):
         self.assertIn(
             mock.call(
                 ANY,
-                params={'offset': 0}
+                params={'offset': 15, 'fields[]': ['artist', 'date', 'description', 'type']}
             ),
             requests_mock.call_args_list
         )
@@ -105,7 +110,7 @@ class EventServiceTest(TestCase):
         self.assertIn(
             mock.call(
                 ANY,
-                params={'day': '01', 'month': '04', 'offset': 0}
+                params={'day': '01', 'month': '04', 'offset': 0, 'fields[]': ['artist', 'date', 'description', 'type']}
             ),
             requests_mock.call_args_list
         )
@@ -124,7 +129,8 @@ class EventServiceTest(TestCase):
         self.assertIn(
             mock.call(
                 ANY,
-                params={'day': '01', 'month': '04', 'offset': offset}
+                params={'day': '01', 'month': '04', 'offset': offset,
+                        'fields[]': ['artist', 'date', 'description', 'type']}
             ),
             requests_mock.call_args_list
         )
@@ -147,7 +153,6 @@ class EventServiceTest(TestCase):
 
     @mock.patch('events.services.EventService.requests.get')
     def test_playlist_calls_the_right_api(self, requests_mock):
-
         # given I call events with no args
         self.service.playlist()
 

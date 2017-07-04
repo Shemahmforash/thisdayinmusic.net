@@ -76,9 +76,9 @@ def _transform_api_response_to_model_list(events):
 
 
 def _api_event_to_event_model(event):
-    # name = event["name"] if event["name"] else None
+    name = event.get('name', None)
 
-    return Event(event["date"], event["description"], event["type"])
+    return Event(event["date"], event["description"], event["type"], name)
 
 
 class Event(object):
