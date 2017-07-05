@@ -1,4 +1,7 @@
 # ThisDayInMusic
+
+[![Build Status](https://travis-ci.org/Shemahmforash/thisdayinmusic.net.svg?branch=master)](https://travis-ci.org/Shemahmforash/thisdayinmusic.net)
+
 ThisDayInMusic is a python app built with django that aims at showing the list of events that happened on a particular day in the history of music and, at the same time, generate spotify playlists for those same events.
 
 It's currently running live at www.thisdayinmusic.net
