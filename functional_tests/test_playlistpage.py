@@ -15,7 +15,25 @@ class PlaylistPageTests(LiveServerTestCase):
     def tearDown(self):
         self.browser.quit()
 
-    def test_can_open_playlist_page(self):
+    @requests_mock.Mocker()
+    def test_can_open_playlist_page(self, m):
+        m.get(settings.API_BASE_ADDRESS + '/playlist/', json={
+            "response": {
+                "status": {
+                    "version": 0.1,
+                    "code": 0,
+                    "status": "Success"
+                },
+                "tracks": [
+                ],
+                "pagination": {
+                    "total": 2,
+                    "offset": 0,
+                    "results": 2
+                }
+            }
+        }, status_code=200)
+
         self.browser.get(self.live_server_url + '/playlist')
 
         today = datetime.now()
