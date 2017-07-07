@@ -56,6 +56,9 @@ class MainPageTest(LiveServerTestCase):
         active_element = navbar_active_element_text(self.browser)
         self.assertIn("Events", active_element)
 
+        date_picker = self.browser.find_element_by_id('dp1')
+        self.assertIsNotNone(date_picker)
+
     @requests_mock.Mocker()
     def test_main_page_presents_event_list(self, m):
         m.get(settings.API_BASE_ADDRESS + '/event/', json={

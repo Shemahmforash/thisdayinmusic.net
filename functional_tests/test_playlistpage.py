@@ -4,6 +4,7 @@ import requests_mock
 from django.conf import settings
 from django.test import LiveServerTestCase
 from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException
 
 from functional_tests.utils import navbar_active_element_text
 
@@ -51,9 +52,9 @@ class PlaylistPageTests(LiveServerTestCase):
         )
 
         active_element = navbar_active_element_text(self.browser)
-
         self.assertIn("Playlist", active_element)
 
+        self.assertRaises(NoSuchElementException, self.browser.find_element_by_id, 'dp1')
 
     @requests_mock.Mocker()
     def test_playlist_page_shows_list_of_songs(self, m):

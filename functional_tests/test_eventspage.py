@@ -68,6 +68,9 @@ class EventsPageTest(LiveServerTestCase):
         pagination = self.browser.find_element_by_class_name('pagination')
         self.assertIsNotNone(pagination)
 
+        date_picker = self.browser.find_element_by_id('dp1')
+        self.assertIsNotNone(date_picker)
+
     @requests_mock.Mocker()
     def test_events_page_presents_event_list(self, m):
         date = self.given_a_random_date()
