@@ -1,7 +1,7 @@
 /*required by navbar fixed on top*/
 body { padding-top: 70px; }
 
-#dp1 {
+#date_picker {
     margin-top: 12px;
     margin-left: 20px;
 }

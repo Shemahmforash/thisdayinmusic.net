@@ -59,7 +59,7 @@
     </div>
 
     <script type="text/javascript">
-        $('#dp1').datepicker({'format': 'yyyy-mm-dd'}).on('changeDate', function (ev) {
+        $('#date_picker').datepicker({'format': 'yyyy-mm-dd'}).on('changeDate', function (ev) {
 
             Date.prototype.addHours = function (h) {
                 this.setHours(this.getHours() + h);

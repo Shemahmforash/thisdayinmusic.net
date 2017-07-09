@@ -56,8 +56,10 @@ class MainPageTest(LiveServerTestCase):
         active_element = navbar_active_element_text(self.browser)
         self.assertIn("Events", active_element)
 
-        date_picker = self.browser.find_element_by_id('dp1')
+        date_picker = self.browser.find_element_by_id('date_picker')
         self.assertIsNotNone(date_picker)
+
+        self.assertIn(today.strftime('%Y-%m-%d'), date_picker.get_attribute('value'))
 
     @requests_mock.Mocker()
     def test_main_page_presents_event_list(self, m):

@@ -29,8 +29,10 @@ def events_page(request, month, day):
     service = EventService(settings.API_BASE_ADDRESS)
     events = service.events(month, day, page)
 
+    today = datetime.now()
+
     date = datetime.strptime(
-        '{} {}'.format(day, month), '%d %B')
+        '{} {} {}'.format(day, month, today.year), '%d %B %Y')
 
     pagination = events['response']['pagination']
 

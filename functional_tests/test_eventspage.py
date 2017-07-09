@@ -24,23 +24,24 @@ class EventsPageTest(LiveServerTestCase):
     def test_can_open_events_page(self, m):
         date = self.given_a_random_date()
 
-        m.get(settings.API_BASE_ADDRESS + '/event/?offset=0&month=' + date.strftime('%m') + '&day=' + date.strftime('%d'),
-              json={
-                  "response": {
-                      "status": {
-                          "version": 0.1,
-                          "code": 0,
-                          "status": "Success"
-                      },
-                      "events": [
-                      ],
-                      "pagination": {
-                          "total": 59,
-                          "offset": 0,
-                          "results": 15
-                      }
-                  }
-              }, status_code=200)
+        m.get(
+            settings.API_BASE_ADDRESS + '/event/?offset=0&month=' + date.strftime('%m') + '&day=' + date.strftime('%d'),
+            json={
+                "response": {
+                    "status": {
+                        "version": 0.1,
+                        "code": 0,
+                        "status": "Success"
+                    },
+                    "events": [
+                    ],
+                    "pagination": {
+                        "total": 59,
+                        "offset": 0,
+                        "results": 15
+                    }
+                }
+            }, status_code=200)
 
         month = date.strftime('%B')
         day = date.strftime("%d")
@@ -68,35 +69,38 @@ class EventsPageTest(LiveServerTestCase):
         pagination = self.browser.find_element_by_class_name('pagination')
         self.assertIsNotNone(pagination)
 
-        date_picker = self.browser.find_element_by_id('dp1')
+        date_picker = self.browser.find_element_by_id('date_picker')
         self.assertIsNotNone(date_picker)
+
+        self.assertIn(date.strftime('%Y-%m-%d'), date_picker.get_attribute('value'))
 
     @requests_mock.Mocker()
     def test_events_page_presents_event_list(self, m):
         date = self.given_a_random_date()
 
-        m.get(settings.API_BASE_ADDRESS + '/event/?offset=0&month=' + date.strftime('%m') + '&day=' + date.strftime('%d'),
-              json={
-                  "response": {
-                      "status": {
-                          "version": 0.1,
-                          "code": 0,
-                          "status": "Success"
-                      },
-                      "events": [
-                          {
-                              "date": "1909-06-27",
-                              "description": "Gianandrea Gavazzeni, composer was born",
-                              "type": "Birth"
-                          },
-                      ],
-                      "pagination": {
-                          "total": 59,
-                          "offset": 0,
-                          "results": 15
-                      }
-                  }
-              }, status_code=200)
+        m.get(
+            settings.API_BASE_ADDRESS + '/event/?offset=0&month=' + date.strftime('%m') + '&day=' + date.strftime('%d'),
+            json={
+                "response": {
+                    "status": {
+                        "version": 0.1,
+                        "code": 0,
+                        "status": "Success"
+                    },
+                    "events": [
+                        {
+                            "date": "1909-06-27",
+                            "description": "Gianandrea Gavazzeni, composer was born",
+                            "type": "Birth"
+                        },
+                    ],
+                    "pagination": {
+                        "total": 59,
+                        "offset": 0,
+                        "results": 15
+                    }
+                }
+            }, status_code=200)
 
         month = date.strftime('%B')
         day = date.strftime("%d")
@@ -107,33 +111,33 @@ class EventsPageTest(LiveServerTestCase):
         event_list = self.browser.find_elements_by_class_name('well')
         self.assertEqual(len(event_list), 1)
 
-
     @requests_mock.Mocker()
     def test_events_page_event_list_is_correctly_filled(self, m):
         date = self.given_a_random_date()
 
-        m.get(settings.API_BASE_ADDRESS + '/event/?offset=0&month=' + date.strftime('%m') + '&day=' + date.strftime('%d'),
-              json={
-                  "response": {
-                      "status": {
-                          "version": 0.1,
-                          "code": 0,
-                          "status": "Success"
-                      },
-                      "events": [
-                          {
-                              "date": "1909-06-27",
-                              "description": "Gianandrea Gavazzeni, composer was born",
-                              "type": "Birth"
-                          },
-                      ],
-                      "pagination": {
-                          "total": 59,
-                          "offset": 0,
-                          "results": 15
-                      }
-                  }
-              }, status_code=200)
+        m.get(
+            settings.API_BASE_ADDRESS + '/event/?offset=0&month=' + date.strftime('%m') + '&day=' + date.strftime('%d'),
+            json={
+                "response": {
+                    "status": {
+                        "version": 0.1,
+                        "code": 0,
+                        "status": "Success"
+                    },
+                    "events": [
+                        {
+                            "date": "1909-06-27",
+                            "description": "Gianandrea Gavazzeni, composer was born",
+                            "type": "Birth"
+                        },
+                    ],
+                    "pagination": {
+                        "total": 59,
+                        "offset": 0,
+                        "results": 15
+                    }
+                }
+            }, status_code=200)
 
         month = date.strftime('%B')
         day = date.strftime("%d")

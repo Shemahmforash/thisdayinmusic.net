@@ -54,7 +54,7 @@ class PlaylistPageTests(LiveServerTestCase):
         active_element = navbar_active_element_text(self.browser)
         self.assertIn("Playlist", active_element)
 
-        self.assertRaises(NoSuchElementException, self.browser.find_element_by_id, 'dp1')
+        self.assertRaises(NoSuchElementException, self.browser.find_element_by_id, 'date_picker')
 
     @requests_mock.Mocker()
     def test_playlist_page_shows_list_of_songs(self, m):

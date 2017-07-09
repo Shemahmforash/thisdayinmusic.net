@@ -5,14 +5,15 @@
 {% endblock %}
 
 {% block content %}
-   <div class="container">
+    <div class="container">
         <div class="row clearfix">
             <div class="col-md-12 column">
                 {% include "partials/navbar.html" with active="playlist" %}
 
                 <div class="page-header">
                     <h1>
-                        {{ date|date:"F, d" }} <small>Playlist based on the events that happened on this day in music...</small>
+                        {{ date|date:"F, d" }}
+                        <small>Playlist based on the events that happened on this day in music...</small>
                     </h1>
                 </div>
             </div>
@@ -32,11 +33,12 @@
 
         <div class="col-sm-6">
             <div class="text-center">
-                <iframe id="spotify-playlist" src="https://embed.spotify.com/?uri=spotify:trackset:Playlist a Day for {{ date }}:{{ spotify_playlist }}"
+                <iframe id="spotify-playlist"
+                        src="https://embed.spotify.com/?uri=spotify:trackset:Playlist a Day for {{ date }}:{{ spotify_playlist }}"
                         style="width:640px; height:520px;" frameborder="0" allowtransparency="true"></iframe>
             </div>
         </div>
-   </div>
+    </div>
 
 {% endblock %}
 
