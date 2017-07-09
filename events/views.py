@@ -52,13 +52,21 @@ def playlist_page(request):
 
     tracks = playlist['response']['tracks']
 
-    spotify_playlist = ",".join([track['spotifyId'].rsplit(':', 1)[1] for track in tracks])
+    spotify_playlist = _create_spotify_playlist(tracks)
 
     return render(request, 'playlist.html', {
         'date': date,
         'playlist': tracks,
         'spotify_playlist': spotify_playlist
     })
+
+
+def _create_spotify_playlist(tracks):
+    return ",".join([_remove_spotify_prefix(track) for track in tracks])
+
+
+def _remove_spotify_prefix(track):
+    return track['spotifyId'].rsplit(':', 1)[1]
 
 
 def about_page(request):
