@@ -17,8 +17,10 @@ class EventsPageTest(LiveServerTestCase):
 
     @staticmethod
     def given_a_random_date():
+        now = datetime.now()
+
         return datetime.strptime(
-            '{} {}'.format(random.randint(1, 366), 2017), '%j %Y')
+            '{} {}'.format(random.randint(1, 366), now.year), '%j %Y')
 
     @requests_mock.Mocker()
     def test_can_open_events_page(self, m):
