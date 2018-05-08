@@ -1,6 +1,12 @@
+import webbrowser
 from math import ceil
 
-from django.shortcuts import render
+import os
+
+import spotipy
+from django.shortcuts import render, redirect
+from spotipy import util, Spotify, oauth2
+
 from events.services.EventService import EventService
 from datetime import datetime
 from django.conf import settings
@@ -44,24 +50,60 @@ def events_page(request, month, day):
     })
 
 
+def add_to_spotify(request):
+    date = datetime.now().strftime('%A, %d %B %Y')
+    code = request.GET.get('code', None)
+
+    tracks = request.session.get('tracks', None)
+    if not tracks:
+        tracks = request.POST.get('tracks')
+        request.session['tracks'] = tracks
+
+    scope = 'playlist-modify-public,playlist-modify-private'
+
+    client_id = os.getenv('SPOTIPY_CLIENT_ID')
+    client_secret = os.getenv('SPOTIPY_CLIENT_SECRET')
+    redirect_uri = os.getenv('SPOTIPY_REDIRECT_URI')
+
+    sp_oauth = oauth2.SpotifyOAuth(client_id, client_secret, redirect_uri,
+                                   scope=scope)
+    if code:
+        token_info = sp_oauth.get_access_token(code)
+
+        sp = spotipy.Spotify(auth=token_info['access_token'])
+
+        playlist = sp.user_playlist_create('thesearchingwanderer', 'Playlist a day for %s' % date)
+        request.session['playlist'] = playlist
+
+        track_list = tracks.split(',')
+        sp.user_playlist_add_tracks('thesearchingwanderer', playlist['id'], track_list)
+
+        return redirect('playlist')
+    else:
+        auth_url = sp_oauth.get_authorize_url()
+        return redirect(auth_url)
+
+
 def playlist_page(request):
     date = datetime.now()
 
+    playlist = _get_spotify_embed_playlist(request)
+
     service = EventService(settings.API_BASE_ADDRESS)
-    playlist = service.playlist()
+    results = service.playlist()
+    tracks = results['response']['tracks']
 
-    tracks = playlist['response']['tracks']
-
-    spotify_playlist = _create_spotify_playlist(tracks)
+    track_ids = _get_track_ids(tracks)
 
     return render(request, 'playlist.html', {
         'date': date,
-        'playlist': tracks,
-        'spotify_playlist': spotify_playlist
+        'tracks': tracks,
+        'track_ids': track_ids,
+        'playlist': playlist
     })
 
 
-def _create_spotify_playlist(tracks):
+def _get_track_ids(tracks):
     return ",".join([_remove_spotify_prefix(track) for track in tracks])
 
 
@@ -89,6 +131,16 @@ def _api_event_to_event_model(event):
     name = event.get('name', None)
 
     return Event(event["date"], event["description"], event["type"], name)
+
+
+def _get_spotify_embed_playlist(request):
+    playlist = request.session.get('playlist', None)
+
+    if playlist:
+        url = playlist['external_urls']['spotify']
+        return url.replace('/user/', '/embed/user/')
+
+    return None
 
 
 class Event(object):

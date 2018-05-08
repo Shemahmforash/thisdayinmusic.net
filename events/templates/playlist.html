@@ -22,7 +22,7 @@
         <div class="col-sm-6">
             <div class="well">
                 <ol>
-                    {% for track in playlist %}
+                    {% for track in tracks %}
                         <li>
                             {{ track.event }}
                         </li>
@@ -33,9 +33,19 @@
 
         <div class="col-sm-6">
             <div class="text-center">
-                <iframe id="spotify-playlist"
-                        src="https://embed.spotify.com/?uri=spotify:trackset:Playlist a Day for {{ date }}:{{ spotify_playlist }}"
-                        style="width:640px; height:520px;" frameborder="0" allowtransparency="true"></iframe>
+                {% if playlist %}
+                    <iframe id="spotify-playlist"
+                            src="{{ playlist }}"
+                            style="width:640px; height:520px;" frameborder="0"
+                            allowtransparency="true"></iframe>
+                {% else %}
+                    <form action="{% url 'add_to_spotify' %}" method="post" id="create-playlist">
+                        {% csrf_token %}
+                        <input type="hidden" name="tracks" id="tracks" value="{{ track_ids }}"/>
+
+                        <input type="submit" value="Create spotify playlist"/>
+                    </form>
+                {% endif %}
             </div>
         </div>
     </div>
