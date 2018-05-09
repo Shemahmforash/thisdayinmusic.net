@@ -1,9 +1,7 @@
-from random import random
-from unittest import mock
-from unittest.mock import ANY
-
 from django.conf import settings
 from django.test import TestCase
+from unittest import mock
+from unittest.mock import ANY
 
 from events.services.EventService import EventService
 from events.tests.utils import given_a_random_page

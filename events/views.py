@@ -49,6 +49,24 @@ def events_page(request, month, day):
     })
 
 
+def playlist_page(request):
+    date = datetime.now()
+
+    service = EventService(settings.API_BASE_ADDRESS)
+    results = service.playlist()
+    tracks = results['response']['tracks']
+
+    track_ids = _get_track_ids(tracks)
+    playlist = _get_spotify_embed_playlist(request, track_ids)
+
+    return render(request, 'playlist.html', {
+        'date': date,
+        'tracks': tracks,
+        'track_ids': track_ids,
+        'playlist': playlist
+    })
+
+
 def add_to_spotify(request):
     date = datetime.now().strftime('%A, %d %B %Y')
     code = request.GET.get('code', None)
@@ -72,7 +90,6 @@ def add_to_spotify(request):
 
         spotify = spotipy.Spotify(auth=token_info['access_token'])
 
-
         playlist = _create_playlist(spotify, username, date, tracks)
 
         request.session['spotify_playlist_id'] = playlist['id']
@@ -90,25 +107,6 @@ def _create_playlist(spotify, username, date, track_ids):
     spotify.user_playlist_add_tracks(username, playlist['id'], track_list)
 
     return playlist
-
-
-def playlist_page(request):
-    date = datetime.now()
-
-
-    service = EventService(settings.API_BASE_ADDRESS)
-    results = service.playlist()
-    tracks = results['response']['tracks']
-
-    track_ids = _get_track_ids(tracks)
-    playlist = _get_spotify_embed_playlist(request, track_ids)
-
-    return render(request, 'playlist.html', {
-        'date': date,
-        'tracks': tracks,
-        'track_ids': track_ids,
-        'playlist': playlist
-    })
 
 
 def _get_track_ids(tracks):
