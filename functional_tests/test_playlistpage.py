@@ -1,11 +1,12 @@
-from datetime import datetime
+import time
 
 import requests_mock
+from datetime import datetime
 from django.conf import settings
-from django.contrib.sessions.backends.db import SessionStore
 from django.test import LiveServerTestCase
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
+from unittest import mock
 
 from functional_tests.utils import navbar_active_element_text
 
@@ -137,7 +138,9 @@ class PlaylistPageTests(LiveServerTestCase):
         self.assertIsNotNone(create_spotify_playlist_form)
 
     @requests_mock.Mocker()
-    def test_playlist_page_shows_spotify_playlist(self, m):
+    @mock.patch('spotipy.Spotify.user_playlist', return_value={'external_urls': {
+        'spotify': 'https://open.spotify.com/user/thesearchingwanderer/playlist/5jUBZBiQWmAiJaeJLYldcj?si=GgOazCjdR0uyHw6Vx9kCfQ'}})
+    def test_playlist_page_shows_spotify_playlist(self, m, mock_spotify):
         m.get(settings.API_BASE_ADDRESS + '/playlist/', json={
             "response": {
                 "status": {
@@ -172,10 +175,12 @@ class PlaylistPageTests(LiveServerTestCase):
         self.browser.get(self.live_server_url)
 
         self.browser.add_cookie({'name': settings.SESSION_COOKIE_NAME, 'value': session.session_key})
-        session['playlist'] = {
-            'external_urls': {
-                'spotify': 'https://open.spotify.com/user/thesearchingwanderer/playlist/5jUBZBiQWmAiJaeJLYldcj?si=oD62KKicR6e0ph8dXdzblA'
-            }
+        session['spotify_playlist_id'] = '5jUBZBiQWmAiJaeJLYldcj'
+        session['username'] = 'thesearchingwanderer'
+        session['date'] = datetime.now().strftime('%A, %d %B %Y')
+        session['spotify_token'] = {
+            'access_token': 'random',
+            'expires_at': int(time.time()) + 3600
         }
         session.save()
 

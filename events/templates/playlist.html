@@ -43,6 +43,8 @@
                         {% csrf_token %}
                         <input type="hidden" name="tracks" id="tracks" value="{{ track_ids }}"/>
 
+                        <input type="text" name="username" id="username"/>
+
                         <input type="submit" value="Create spotify playlist"/>
                     </form>
                 {% endif %}
