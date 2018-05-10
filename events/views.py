@@ -1,8 +1,8 @@
-import time
 from math import ceil
 
 from datetime import datetime
 from django.conf import settings
+from django.http import HttpResponseBadRequest
 from django.shortcuts import render, redirect
 
 from events.services.event_service import EventService
@@ -67,31 +67,31 @@ def playlist_page(request):
 
 
 def add_to_spotify(request):
+    username = request.POST.get('username')
+    request.session['username'] = username
+
+    tracks = request.POST.get('tracks')
+    request.session['tracks'] = tracks
+
+    auth_url = SPOTIFY_OAUTH.get_authorize_url()
+    return redirect(auth_url)
+
+
+def add_to_spotify_callback(request):
     today = datetime.now().strftime('%A, %d %B %Y')
     code = request.GET.get('code', None)
 
-    username = request.session.get('username', None)
-    if not username:
-        username = request.POST.get('username', None)
-        request.session['username'] = username
-
-    tracks = request.session.get('tracks', None)
-    if not tracks:
-        tracks = request.POST.get('tracks')
-        request.session['tracks'] = tracks
-
-    spotify_oauth = SPOTIFY_OAUTH
-    service = SpotifyService(spotify_oauth, request.session)
-
     if code:
-        service.create_token(code)
+        username = request.session.get('username', None)
+        tracks = request.session.get('tracks', None)
 
+        service = SpotifyService(SPOTIFY_OAUTH, request.session)
+        service.create_token(code)
         _create_playlist(request, service, today, tracks, username)
 
         return redirect('playlist')
-    else:
-        auth_url = spotify_oauth.get_authorize_url()
-        return redirect(auth_url)
+
+    return HttpResponseBadRequest()
 
 
 def _get_spotify_embed_playlist(request, tracks):
