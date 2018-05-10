@@ -138,9 +138,12 @@ class PlaylistPageTests(LiveServerTestCase):
         self.assertIsNotNone(create_spotify_playlist_form)
 
     @requests_mock.Mocker()
-    @mock.patch('spotipy.Spotify.user_playlist', return_value={'external_urls': {
-        'spotify': 'https://open.spotify.com/user/thesearchingwanderer/playlist/5jUBZBiQWmAiJaeJLYldcj?si=GgOazCjdR0uyHw6Vx9kCfQ'}})
-    def test_playlist_page_shows_spotify_playlist(self, m, mock_spotify):
+    @mock.patch('spotipy.Spotify.user_playlist', return_value={
+        'id': '5jUBZBiQWmAiJaeJLYldcj',
+        'external_urls': {
+            'spotify': 'https://open.spotify.com/user/thesearchingwanderer/playlist/5jUBZBiQWmAiJaeJLYldcj?si=GgOazCjdR0uyHw6Vx9kCfQ'
+        }})
+    def test_playlist_page_shows_spotify_playlist(self, m, _):
         m.get(settings.API_BASE_ADDRESS + '/playlist/', json={
             "response": {
                 "status": {

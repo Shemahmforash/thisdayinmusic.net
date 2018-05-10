@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 import os
 from os.path import join, dirname
 from dotenv import load_dotenv
+from spotipy import oauth2
 
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
@@ -32,6 +33,9 @@ API_BASE_ADDRESS = os.environ.get("API_BASE_ADDRESS")
 CLIENT_ID = os.getenv('SPOTIPY_CLIENT_ID')
 CLIENT_SECRET = os.getenv('SPOTIPY_CLIENT_SECRET')
 REDIRECT_URI = os.getenv('SPOTIPY_REDIRECT_URI')
+SPOTIFY_SCOPE = os.getenv('SPOTIFY_SCOPE')
+
+SPOTIFY_OAUTH = oauth2.SpotifyOAuth(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, scope=SPOTIFY_SCOPE)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

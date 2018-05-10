@@ -8,7 +8,8 @@ from django.shortcuts import render, redirect
 from spotipy import oauth2
 
 from events.services.EventService import EventService
-from thisdayinmusic.settings import CLIENT_ID, CLIENT_SECRET, REDIRECT_URI
+from events.services.SpotifyService import SpotifyService
+from thisdayinmusic.settings import CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, SPOTIFY_SCOPE, SPOTIFY_OAUTH
 
 
 def home_page(request):
@@ -67,8 +68,44 @@ def playlist_page(request):
     })
 
 
+def _get_spotify_embed_playlist(request, tracks):
+    playlist_id = request.session.get('spotify_playlist_id')
+    token = request.session.get('spotify_token')
+    username = request.session.get('username')
+
+    if not all([playlist_id, token, username]):
+        return None
+
+    today = datetime.now().strftime('%A, %d %B %Y')
+    playlist_date = request.session.get('date')
+
+    service = SpotifyService(SPOTIFY_OAUTH)
+
+    # token = _validate_token(SPOTIFY_OAUTH, token)
+    # request.session['spotify_token'] = token
+
+    # spotify = spotipy.Spotify(auth=token['access_token'])
+
+    if today != playlist_date:
+        del request.session['date']
+        del request.session['spotify_playlist_id']
+
+        playlist_name = 'Playlist a day for %s' % today
+        playlist = service.create_playlist_with_tracks(username, playlist_name, tracks, token)
+
+        request.session['spotify_playlist_id'] = playlist['id']
+        request.session['date'] = today
+    else:
+        playlist = service.get_playlist(username, playlist_id, token)
+
+    if playlist:
+        return playlist['url']
+
+    return None
+
+
 def add_to_spotify(request):
-    date = datetime.now().strftime('%A, %d %B %Y')
+    today = datetime.now().strftime('%A, %d %B %Y')
     code = request.GET.get('code', None)
 
     username = request.session.get('username', None)
@@ -81,32 +118,23 @@ def add_to_spotify(request):
         tracks = request.POST.get('tracks')
         request.session['tracks'] = tracks
 
-    scope = 'playlist-modify-public,playlist-modify-private'
-    spotify_oauth = oauth2.SpotifyOAuth(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, scope=scope)
+    spotify_oauth = SPOTIFY_OAUTH
+    service = SpotifyService(spotify_oauth)
 
     if code:
-        token_info = spotify_oauth.get_access_token(code)
-        request.session['spotify_token'] = token_info
+        token = spotify_oauth.get_access_token(code)
+        request.session['spotify_token'] = token
 
-        spotify = spotipy.Spotify(auth=token_info['access_token'])
-
-        playlist = _create_playlist(spotify, username, date, tracks)
+        playlist_name = 'Playlist a day for %s' % today
+        playlist = service.create_playlist_with_tracks(username, playlist_name, tracks, token)
 
         request.session['spotify_playlist_id'] = playlist['id']
-        request.session['date'] = date
+        request.session['date'] = today
+
         return redirect('playlist')
     else:
         auth_url = spotify_oauth.get_authorize_url()
         return redirect(auth_url)
-
-
-def _create_playlist(spotify, username, date, track_ids):
-    playlist = spotify.user_playlist_create(username, 'Playlist a day for %s' % date)
-
-    track_list = track_ids.split(',')
-    spotify.user_playlist_add_tracks(username, playlist['id'], track_list)
-
-    return playlist
 
 
 def _get_track_ids(tracks):
@@ -147,43 +175,6 @@ def _validate_token(spotify_oauth, token):
         token = spotify_oauth.refresh_access_token(token['refresh_token'])
 
     return token
-
-
-def _get_spotify_embed_playlist(request, tracks):
-    playlist_id = request.session.get('spotify_playlist_id')
-    token = request.session.get('spotify_token')
-    username = request.session.get('username')
-
-    if not all([playlist_id, token, username]):
-        return None
-
-    today = datetime.now().strftime('%A, %d %B %Y')
-    playlist_date = request.session.get('date')
-
-    scope = 'playlist-modify-public,playlist-modify-private'
-    spotify_oauth = oauth2.SpotifyOAuth(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, scope=scope)
-
-    token = _validate_token(spotify_oauth, token)
-    request.session['spotify_token'] = token
-
-    spotify = spotipy.Spotify(auth=token['access_token'])
-
-    if today != playlist_date:
-        del request.session['date']
-        del request.session['spotify_playlist_id']
-
-        playlist = _create_playlist(spotify, username, today, tracks)
-
-        request.session['spotify_playlist_id'] = playlist['id']
-        request.session['date'] = today
-    else:
-        playlist = spotify.user_playlist(username, playlist_id)
-
-    if playlist:
-        url = playlist['external_urls']['spotify']
-        return url.replace('/user/', '/embed/user/')
-
-    return None
 
 
 class Event(object):
