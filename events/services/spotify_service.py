@@ -37,7 +37,7 @@ class SpotifyService:
         self.backend[self.TOKEN_KEY] = token
 
     def _get_spotify_connector(self):
-        token = self.backend[self.TOKEN_KEY]
+        token = self.backend.get(self.TOKEN_KEY, None)
         if not token:
             raise TokenNotFoundException
 

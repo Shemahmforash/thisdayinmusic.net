@@ -3,7 +3,7 @@ import time
 from spotipy import oauth2
 from unittest import TestCase, mock
 
-from events.services.spotify_service import SpotifyService
+from events.services.spotify_service import SpotifyService, TokenNotFoundException
 from thisdayinmusic.settings import CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, SPOTIFY_SCOPE
 
 
@@ -12,6 +12,13 @@ class SpotifyServiceTest(TestCase):
         self.backend = {}
         spotify_oauth = oauth2.SpotifyOAuth(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, scope=SPOTIFY_SCOPE)
         self.service = SpotifyService(spotify_oauth, self.backend)
+
+    def test_get_playlist_with_no_token_specified_raises_exception(self):
+        username = 'random_user_name'
+        playlist_id = 'random_id'
+
+        with self.assertRaises(TokenNotFoundException):
+            self.service.get_playlist(username, playlist_id)
 
     @mock.patch('spotipy.Spotify.user_playlist', return_value={'id': 'random_id', 'external_urls': {
         'spotify': 'https://open.spotify.com/user/random_user_name/playlist/random_id'}})

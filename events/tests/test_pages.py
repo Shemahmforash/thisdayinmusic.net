@@ -1,3 +1,6 @@
+import time
+
+from datetime import datetime, timedelta
 from django.test import TestCase
 from unittest import mock
 
@@ -67,3 +70,63 @@ class PagesTest(TestCase):
         self.client.get('/playlist')
 
         self.assertTrue(mock_event_service_get.called)
+
+    @mock.patch('events.services.event_service.EventService.playlist')
+    @mock.patch('events.services.spotify_service.SpotifyService.get_playlist',
+                return_value={'id': 'random', 'url': 'url'})
+    def test_playlist_page_gets_already_generated_playlist(self, spotify_get_playlist_mock, _):
+        session = self.client.session
+        session['spotify_playlist_id'] = 'xpto'
+        session['username'] = 'some_user'
+        session['spotify_token'] = {
+            'access_token': 'random_access_token',
+            'expires_at': int(time.time()) + 3600,
+        }
+        session['date'] = datetime.now().strftime('%A, %d %B %Y')
+        session.save()
+
+        self.client.get('/playlist')
+
+        self.assertTrue(spotify_get_playlist_mock.called)
+
+    @mock.patch('events.services.event_service.EventService.playlist')
+    @mock.patch('events.services.spotify_service.SpotifyService.create_playlist_with_tracks',
+                return_value={'id': 'random', 'url': 'url'})
+    def test_playlist_page_creates_playlist_when_date_is_not_the_same_as_generated(self,
+                                                                                   create_playlist_with_tracks_mock,
+                                                                                   _):
+
+        past_date = datetime.now() - timedelta(days=1)
+        session = self.client.session
+        session['spotify_playlist_id'] = 'xpto'
+        session['username'] = 'some_user'
+        session['date'] = past_date.strftime('%A, %d %B %Y')
+        session['spotify_token'] = {
+            'access_token': 'random_access_token',
+            'expires_at': int(time.time()) + 3600,
+        }
+        session.save()
+
+        self.client.get('/playlist')
+
+        self.assertTrue(create_playlist_with_tracks_mock.called)
+
+    @mock.patch('spotipy.oauth2.SpotifyOAuth.get_authorize_url', return_value='/playlist')
+    def test_add_to_spotify_page_redirects_to_spotify_auth(self, spotify_get_oauth_url_mock):
+        response = self.client.post('/playlist/create_playlist', {'username': 'random', 'tracks': 'abc,def'})
+
+        self.assertTrue(spotify_get_oauth_url_mock.called)
+        self.assertRedirects(response, '/playlist')
+
+    @mock.patch('events.services.spotify_service.SpotifyService.create_token')
+    @mock.patch('events.services.spotify_service.SpotifyService.create_playlist_with_tracks',
+                return_value={'id': 'random', 'url': 'url'})
+    def test_add_to_spotify_callback_page_creates_token_and_redirects_to_playlist(self,
+                                                                                  create_playlist_with_tracks_mock,
+                                                                                  spotify_create_token_mock):
+        response = self.client.get('/playlist/create_playlist/callback?code=some_code')
+
+        self.assertTrue(spotify_create_token_mock.called)
+        self.assertTrue(create_playlist_with_tracks_mock.called)
+
+        self.assertRedirects(response, '/playlist')

@@ -68,10 +68,10 @@ def playlist_page(request):
 
 def add_to_spotify(request):
     username = request.POST.get('username')
-    request.session['username'] = username
-
     tracks = request.POST.get('tracks')
+
     request.session['tracks'] = tracks
+    request.session['username'] = username
 
     auth_url = SPOTIFY_OAUTH.get_authorize_url()
     return redirect(auth_url)
