@@ -1,5 +1,5 @@
-from unittest import mock
 from django.test import TestCase
+from unittest import mock
 
 from events.tests.utils import given_a_random_page
 

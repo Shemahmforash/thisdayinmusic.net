@@ -1,9 +1,9 @@
+import random
 import requests_mock
-from django.test import LiveServerTestCase
 from datetime import datetime
 from django.conf import settings
+from django.test import LiveServerTestCase
 from selenium import webdriver
-import random
 
 from functional_tests.utils import navbar_active_element_text
 

@@ -11,8 +11,8 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
-from os.path import join, dirname
 from dotenv import load_dotenv
+from os.path import join, dirname
 from spotipy import oauth2
 
 dotenv_path = join(dirname(__file__), '.env')

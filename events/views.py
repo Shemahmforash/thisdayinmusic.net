@@ -1,15 +1,13 @@
 import time
 from math import ceil
 
-import spotipy
 from datetime import datetime
 from django.conf import settings
 from django.shortcuts import render, redirect
-from spotipy import oauth2
 
 from events.services.event_service import EventService
 from events.services.spotify_service import SpotifyService
-from thisdayinmusic.settings import CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, SPOTIFY_SCOPE, SPOTIFY_OAUTH
+from thisdayinmusic.settings import SPOTIFY_OAUTH
 
 
 def home_page(request):
