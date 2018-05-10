@@ -9,20 +9,21 @@ from thisdayinmusic.settings import CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, SPOT
 
 class SpotifyServiceTest(TestCase):
     def setUp(self):
+        self.backend = {}
         spotify_oauth = oauth2.SpotifyOAuth(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, scope=SPOTIFY_SCOPE)
-        self.service = SpotifyService(spotify_oauth)
+        self.service = SpotifyService(spotify_oauth, self.backend)
 
     @mock.patch('spotipy.Spotify.user_playlist', return_value={'id': 'random_id', 'external_urls': {
         'spotify': 'https://open.spotify.com/user/random_user_name/playlist/random_id'}})
     def test_get_playlist_with_valid_token(self, user_playlist_mock):
         username = 'random_user_name'
         playlist_id = 'random_id'
-        token = {
+        self.backend['spotify_token'] = {
             'access_token': 'random_access_token',
             'expires_at': int(time.time()) + 3600,
         }
 
-        playlist = self.service.get_playlist(username, playlist_id, token)
+        playlist = self.service.get_playlist(username, playlist_id)
 
         self.assertIn(
             mock.call(
@@ -45,13 +46,13 @@ class SpotifyServiceTest(TestCase):
     def test_get_playlist_with_expired_token_refreshes_it(self, refresh_access_token_mock, _):
         username = 'random_user_name'
         playlist_id = 'random_id'
-        token = {
+        self.backend['spotify_token'] = {
             'access_token': 'random_access_token',
             'expires_at': 10,
             'refresh_token': 'random_refresh_token'
         }
 
-        playlist = self.service.get_playlist(username, playlist_id, token)
+        playlist = self.service.get_playlist(username, playlist_id)
 
         self.assertIn(
             mock.call(
@@ -71,13 +72,13 @@ class SpotifyServiceTest(TestCase):
     def test_create_playlist_with_valid_token(self, user_playlist_add_tracks_mock, user_playlist_create_mock):
         username = 'random_user_name'
         playlist_name = 'random_id'
-        token = {
+        self.backend['spotify_token'] = {
             'access_token': 'random_access_token',
             'expires_at': int(time.time()) + 3600,
         }
         tracks = 'random_id1,random_id2'
 
-        playlist = self.service.create_playlist_with_tracks(username, playlist_name, tracks, token)
+        playlist = self.service.create_playlist_with_tracks(username, playlist_name, tracks)
         self.assertIn(
             mock.call(
                 username, playlist_name

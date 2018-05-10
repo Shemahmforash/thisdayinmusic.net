@@ -3,20 +3,27 @@ import time
 import spotipy
 
 
-class SpotifyService:
-    def __init__(self, spotify_oauth):
-        self.spotify_oauth = spotify_oauth
+class TokenNotFoundException(Exception):
+    pass
 
-    def get_playlist(self, username, playlist_id, token):
-        spotify = self._get_spotify_connector(token)
+
+class SpotifyService:
+    TOKEN_KEY = 'spotify_token'
+
+    def __init__(self, spotify_oauth, backend=None):
+        self.spotify_oauth = spotify_oauth
+        self.backend = backend
+
+    def get_playlist(self, username, playlist_id):
+        spotify = self._get_spotify_connector()
         playlist = spotify.user_playlist(username, playlist_id)
 
         transformed_playlist = transform_spotify_playlist_to_thisdayinmusic_playlist(playlist)
 
         return transformed_playlist
 
-    def create_playlist_with_tracks(self, username, playlist_name, tracks, token):
-        spotify = self._get_spotify_connector(token)
+    def create_playlist_with_tracks(self, username, playlist_name, tracks):
+        spotify = self._get_spotify_connector()
 
         playlist = spotify.user_playlist_create(username, playlist_name)
         track_list = tracks.split(',')
@@ -25,12 +32,21 @@ class SpotifyService:
 
         return transform_spotify_playlist_to_thisdayinmusic_playlist(playlist)
 
-    def _get_spotify_connector(self, token):
+    def create_token(self, code):
+        token = self.spotify_oauth.get_access_token(code)
+        self.backend[self.TOKEN_KEY] = token
+
+    def _get_spotify_connector(self):
+        token = self.backend[self.TOKEN_KEY]
+        if not token:
+            raise TokenNotFoundException
+
         expires_at = token['expires_at']
         now = int(time.time())
 
         if now > expires_at:
             token = self.spotify_oauth.refresh_access_token(token['refresh_token'])
+            self.backend[self.TOKEN_KEY] = token
 
         return spotipy.Spotify(auth=token['access_token'])
 
