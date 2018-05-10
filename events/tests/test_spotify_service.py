@@ -3,7 +3,7 @@ import time
 from spotipy import oauth2
 from unittest import TestCase, mock
 
-from events.services.SpotifyService import SpotifyService
+from events.services.spotify_service import SpotifyService
 from thisdayinmusic.settings import CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, SPOTIFY_SCOPE
 
 

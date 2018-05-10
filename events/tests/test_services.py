@@ -3,7 +3,7 @@ from django.test import TestCase
 from unittest import mock
 from unittest.mock import ANY
 
-from events.services.EventService import EventService
+from events.services.event_service import EventService
 from events.tests.utils import given_a_random_page
 
 
@@ -36,7 +36,7 @@ class EventServiceTest(TestCase):
 
         self.assertEqual(30, self.service.offset(page))
 
-    @mock.patch('events.services.EventService.requests.get')
+    @mock.patch('events.services.event_service.requests.get')
     def test_events_with_no_args_api_is_called_with_default_args(
             self, requests_mock):
         # given I call events with no args
@@ -51,7 +51,7 @@ class EventServiceTest(TestCase):
             requests_mock.call_args_list
         )
 
-    @mock.patch('events.services.EventService.requests.get')
+    @mock.patch('events.services.event_service.requests.get')
     def test_events_with_day_args_api_is_called_with_default_args(
             self, requests_mock):
         # given I call events with day
@@ -66,7 +66,7 @@ class EventServiceTest(TestCase):
             requests_mock.call_args_list
         )
 
-    @mock.patch('events.services.EventService.requests.get')
+    @mock.patch('events.services.event_service.requests.get')
     def test_events_with_month_args_api_is_called_with_default_args(
             self, requests_mock):
         # given I call events with month
@@ -81,7 +81,7 @@ class EventServiceTest(TestCase):
             requests_mock.call_args_list
         )
 
-    @mock.patch('events.services.EventService.requests.get')
+    @mock.patch('events.services.event_service.requests.get')
     def test_events_with_page_args_api_is_called_with_the_right_offset_args(
             self, requests_mock):
         page = 2
@@ -98,7 +98,7 @@ class EventServiceTest(TestCase):
             requests_mock.call_args_list
         )
 
-    @mock.patch('events.services.EventService.requests.get')
+    @mock.patch('events.services.event_service.requests.get')
     def test_events_with_day_and_month_args_api_is_called_with_day_and_month(
             self, requests_mock):
         # given I call events with day and month
@@ -113,7 +113,7 @@ class EventServiceTest(TestCase):
             requests_mock.call_args_list
         )
 
-    @mock.patch('events.services.EventService.requests.get')
+    @mock.patch('events.services.event_service.requests.get')
     def test_events_with_day_month_and_page_args_api_is_called_with_day_and_month_and_offset(
             self, requests_mock):
         page = given_a_random_page()
@@ -133,7 +133,7 @@ class EventServiceTest(TestCase):
             requests_mock.call_args_list
         )
 
-    @mock.patch('events.services.EventService.requests.get')
+    @mock.patch('events.services.event_service.requests.get')
     def test_when_api_returns_results_events_should_return_them(
             self, mocked_get):
         # given that the api responds with a json
@@ -149,7 +149,7 @@ class EventServiceTest(TestCase):
         # with the right keys
         self.assertEqual(result['response'], {"events": [{}]})
 
-    @mock.patch('events.services.EventService.requests.get')
+    @mock.patch('events.services.event_service.requests.get')
     def test_playlist_calls_the_right_api(self, requests_mock):
         # given I call events with no args
         self.service.playlist()

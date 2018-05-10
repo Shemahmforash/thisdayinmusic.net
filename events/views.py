@@ -7,8 +7,8 @@ from django.conf import settings
 from django.shortcuts import render, redirect
 from spotipy import oauth2
 
-from events.services.EventService import EventService
-from events.services.SpotifyService import SpotifyService
+from events.services.event_service import EventService
+from events.services.spotify_service import SpotifyService
 from thisdayinmusic.settings import CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, SPOTIFY_SCOPE, SPOTIFY_OAUTH
 
 
