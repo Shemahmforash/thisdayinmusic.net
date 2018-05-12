@@ -9,6 +9,8 @@ from events.services.event_service import EventService
 from events.services.spotify_service import SpotifyService
 from thisdayinmusic.settings import SPOTIFY_OAUTH
 
+PLAYLIST_DATE_FORMAT = '%A, %d %B %Y'
+
 
 def home_page(request):
     page = _get_current_page(request)
@@ -33,10 +35,7 @@ def events_page(request, month, day):
     service = EventService(settings.API_BASE_ADDRESS)
     events = service.events(month, day, page)
 
-    today = datetime.now()
-
-    date = datetime.strptime(
-        '{} {} {}'.format(day, month, today.year), '%d %B %Y')
+    date = _get_date_from_month_day_values(day, month)
 
     pagination = events['response']['pagination']
 
@@ -48,15 +47,18 @@ def events_page(request, month, day):
     })
 
 
-def playlist_page(request):
+def playlist_page(request, month=None, day=None):
     date = datetime.now()
 
+    if month is not None and day is not None:
+        date = _get_date_from_month_day_values(day, month)
+
     service = EventService(settings.API_BASE_ADDRESS)
-    results = service.playlist()
+    results = service.playlist(month, day)
     tracks = results['response']['tracks']
 
     track_ids = _get_track_ids(tracks)
-    playlist = _get_spotify_embed_playlist(request, track_ids)
+    playlist = _get_spotify_embed_playlist(request, track_ids, date)
 
     return render(request, 'playlist.html', {
         'date': date,
@@ -78,7 +80,7 @@ def add_to_spotify(request):
 
 
 def add_to_spotify_callback(request):
-    today = datetime.now().strftime('%A, %d %B %Y')
+    today = datetime.now().strftime(PLAYLIST_DATE_FORMAT)
     code = request.GET.get('code', None)
 
     if code:
@@ -94,31 +96,38 @@ def add_to_spotify_callback(request):
     return HttpResponseBadRequest()
 
 
-def _get_spotify_embed_playlist(request, tracks):
+def _get_date_from_month_day_values(day, month):
+    today = datetime.now()
+    date = datetime.strptime(
+        '{} {} {}'.format(day, month, today.year), '%d %B %Y')
+    return date
+
+
+def _get_spotify_embed_playlist(request, tracks, requested_date):
     playlist_id = request.session.get('spotify_playlist_id')
     username = request.session.get('username')
 
     if not all([playlist_id, username]):
         return None
 
-    today = datetime.now().strftime('%A, %d %B %Y')
+    pretty_date = requested_date.strftime(PLAYLIST_DATE_FORMAT)
     playlist_date = request.session.get('date')
 
     service = SpotifyService(SPOTIFY_OAUTH, request.session)
 
-    if today != playlist_date:
-        playlist = _create_playlist(request, service, today, tracks, username)
+    if pretty_date != playlist_date:
+        playlist = _create_playlist(request, service, pretty_date, tracks, username)
     else:
         playlist = service.get_playlist(username, playlist_id)
 
     return playlist['url']
 
 
-def _create_playlist(request, service, today, tracks, username):
-    playlist_name = 'Playlist a day for %s' % today
+def _create_playlist(request, service, playlist_date, tracks, username):
+    playlist_name = 'Playlist a day for %s' % playlist_date
     playlist = service.create_playlist_with_tracks(username, playlist_name, tracks)
     request.session['spotify_playlist_id'] = playlist['id']
-    request.session['date'] = today
+    request.session['date'] = playlist_date
 
     return playlist
 

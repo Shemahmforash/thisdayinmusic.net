@@ -158,5 +158,35 @@ class EventServiceTest(TestCase):
         self.assertIn(
             mock.call(
                 ANY,
+                params={}
             ),
             requests_mock.call_args_list)
+
+    @mock.patch('events.services.event_service.requests.get')
+    def test_playlist_page_with_date_calls_the_api_with_the_right_arguments(self, requests_mock):
+        # given I call events with date
+        self.service.playlist(month='April', day=1)
+
+        # then the api is reached without query parameters
+        self.assertIn(
+            mock.call(
+                ANY,
+                params={'day': '01', 'month': '04'}
+            ),
+            requests_mock.call_args_list)
+
+    @mock.patch('events.services.event_service.requests.get')
+    def test_when_playlist_api_returns_results_playlist_should_return_them(
+            self, mocked_get):
+        # given that the api responds with a json
+        mocked_response = mock.MagicMock()
+        mocked_response.json.return_value = {"response": {"tracks": [{}]}}
+        mocked_get.return_value = mocked_response
+
+        result = self.service.playlist()
+
+        # then a dictionary is returned
+        self.assertEqual(type(result), dict)
+
+        # with the right keys
+        self.assertEqual(result['response'], {"tracks": [{}]})

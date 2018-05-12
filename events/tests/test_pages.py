@@ -23,6 +23,11 @@ class PagesTest(TestCase):
         response = self.client.get('/playlist')
         self.assertTemplateUsed(response, 'playlist.html')
 
+    @mock.patch('events.services.event_service.EventService.playlist')
+    def test_playlistpage_for_certain_day_uses_playlist_template(self, _):
+        response = self.client.get('/playlist/May/12')
+        self.assertTemplateUsed(response, 'playlist.html')
+
     def test_aboutpage_uses_about_template(self):
         response = self.client.get('/about')
         self.assertTemplateUsed(response, 'about.html')
@@ -66,6 +71,19 @@ class PagesTest(TestCase):
         )
 
     @mock.patch('events.services.event_service.EventService.playlist')
+    def test_playlist_page_with_date_calls_event_service(self, mock_event_service_get):
+        self.client.get('/playlist/April/25')
+
+        # then the service is called with the right arguments
+        self.assertIn(
+            mock.call(
+                'April',
+                '25',
+            ),
+            mock_event_service_get.call_args_list
+        )
+
+    @mock.patch('events.services.event_service.EventService.playlist')
     def test_playlist_page_calls_event_service(self, mock_event_service_get):
         self.client.get('/playlist')
 
@@ -95,7 +113,6 @@ class PagesTest(TestCase):
     def test_playlist_page_creates_playlist_when_date_is_not_the_same_as_generated(self,
                                                                                    create_playlist_with_tracks_mock,
                                                                                    _):
-
         past_date = datetime.now() - timedelta(days=1)
         session = self.client.session
         session['spotify_playlist_id'] = 'xpto'
@@ -108,6 +125,28 @@ class PagesTest(TestCase):
         session.save()
 
         self.client.get('/playlist')
+
+        self.assertTrue(create_playlist_with_tracks_mock.called)
+
+    @mock.patch('events.services.event_service.EventService.playlist')
+    @mock.patch('events.services.spotify_service.SpotifyService.create_playlist_with_tracks',
+                return_value={'id': 'random', 'url': 'url'})
+    def test_playlist_page_with_date_creates_playlist_when_date_is_not_the_same_as_generated(self,
+                                                                                             create_playlist_with_tracks_mock,
+                                                                                             _):
+        date = datetime.now()
+        session = self.client.session
+        session['spotify_playlist_id'] = 'xpto'
+        session['username'] = 'some_user'
+        session['date'] = date.strftime('%A, %d %B %Y')
+        session['spotify_token'] = {
+            'access_token': 'random_access_token',
+            'expires_at': int(time.time()) + 3600,
+        }
+        session.save()
+
+        # TODO: use dynamic date in url
+        self.client.get('/playlist/May/11')
 
         self.assertTrue(create_playlist_with_tracks_mock.called)
 

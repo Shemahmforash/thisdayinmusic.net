@@ -22,6 +22,7 @@ urlpatterns = [
     url(r'^events/(?P<month>\w+)/(?P<day>\d{1,2})$',
         views.events_page, name="events"),
     url(r'^playlist$', views.playlist_page, name='playlist'),
+    url(r'^playlist/(?P<month>\w+)/(?P<day>\d{1,2})$$', views.playlist_page, name='playlist_with_date'),
     url(r'^playlist/create_playlist$', views.add_to_spotify, name='add_to_spotify'),
     url(r'^playlist/create_playlist/callback$', views.add_to_spotify_callback, name='add_to_spotify_callback'),
     url(r'^about$', views.about_page, name='about'),
