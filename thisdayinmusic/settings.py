@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
+
+import raven
 from dotenv import load_dotenv
 from os.path import join, dirname
 from spotipy import oauth2
@@ -44,6 +46,8 @@ SPOTIFY_OAUTH = oauth2.SpotifyOAuth(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, scop
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DJANGO_DEBUG', False)
 
+ENVIRONMENT = os.getenv('ENVIRONMENT', 'PROD')
+
 ALLOWED_HOSTS = ['127.0.0.1']
 
 STATIC_ROOT = os.environ.get("STATIC_ROOT")
@@ -59,6 +63,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'events',
 ]
+
+if ENVIRONMENT == 'PROD':
+    INSTALLED_APPS.append('raven.contrib.django.raven_compat')
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -135,3 +142,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+
+if ENVIRONMENT == 'PROD':
+    RAVEN_CONFIG = {
+        'dsn': os.getenv('RAVEN_DSN'),
+        'release': raven.fetch_git_sha(os.path.abspath(os.curdir)),
+    }

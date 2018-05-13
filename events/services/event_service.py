@@ -37,8 +37,9 @@ class EventService:
         payload = {
             'offset': self.offset(page),
             'fields[]': self.DEFAULT_FIELDS,
-            **date_payload
         }
+
+        payload.update(date_payload)
 
         return _call_api(address, payload)
 
