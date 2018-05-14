@@ -55,6 +55,8 @@ def playlist_page(request, month=None, day=None):
     tracks = results['response']['tracks']
 
     track_ids = _get_track_ids(tracks)
+    request.session['tracks'] = track_ids
+
     playlist = _get_spotify_embed_playlist(request, track_ids, date)
 
     return render(request, 'playlist.html', {
@@ -66,9 +68,6 @@ def playlist_page(request, month=None, day=None):
 
 
 def add_to_spotify(request):
-    tracks = request.POST.get('tracks')
-    request.session['tracks'] = tracks
-
     auth_url = SPOTIFY_OAUTH.get_authorize_url()
     return redirect(auth_url)
 

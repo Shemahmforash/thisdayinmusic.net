@@ -41,10 +41,6 @@
                 {% else %}
                     <form action="{% url 'add_to_spotify' %}" method="post" id="create-playlist">
                         {% csrf_token %}
-                        <div class="input-group mb-3">
-                            <input type="hidden" class="form-control" name="tracks" id="tracks"
-                                   value="{{ track_ids }}"/>
-                        </div>
                         <input type="submit" value="Create spotify playlist" class="btn btn-primary"/>
                     </form>
                 {% endif %}
