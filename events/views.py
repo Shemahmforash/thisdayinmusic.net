@@ -48,10 +48,7 @@ def events_page(request, month, day):
 
 
 def playlist_page(request, month=None, day=None):
-    date = datetime.now()
-
-    if month is not None and day is not None:
-        date = _get_date_from_month_day_values(day, month)
+    date = _get_date_from_month_day_values(day, month)
 
     service = EventService(settings.API_BASE_ADDRESS)
     results = service.playlist(month, day)
@@ -69,11 +66,8 @@ def playlist_page(request, month=None, day=None):
 
 
 def add_to_spotify(request):
-    username = request.POST.get('username')
     tracks = request.POST.get('tracks')
-
     request.session['tracks'] = tracks
-    request.session['username'] = username
 
     auth_url = SPOTIFY_OAUTH.get_authorize_url()
     return redirect(auth_url)
@@ -84,11 +78,14 @@ def add_to_spotify_callback(request):
     code = request.GET.get('code', None)
 
     if code:
-        username = request.session.get('username', None)
         tracks = request.session.get('tracks', None)
 
         service = SpotifyService(SPOTIFY_OAUTH, request.session)
         service.create_token(code)
+
+        username = service.me()
+        request.session['username'] = username
+
         _create_playlist(request, service, today, tracks, username)
 
         return redirect('playlist')
@@ -96,11 +93,14 @@ def add_to_spotify_callback(request):
     return HttpResponseBadRequest()
 
 
-def _get_date_from_month_day_values(day, month):
+def _get_date_from_month_day_values(day=None, month=None):
     today = datetime.now()
-    date = datetime.strptime(
+
+    if day is None and month is None:
+        return today
+
+    return datetime.strptime(
         '{} {} {}'.format(day, month, today.year), '%d %B %Y')
-    return date
 
 
 def _get_spotify_embed_playlist(request, tracks, requested_date):

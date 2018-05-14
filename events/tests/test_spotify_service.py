@@ -13,6 +13,30 @@ class SpotifyServiceTest(TestCase):
         spotify_oauth = oauth2.SpotifyOAuth(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, scope=SPOTIFY_SCOPE)
         self.service = SpotifyService(spotify_oauth, self.backend)
 
+    def test_me_with_no_token_specified_raises_exception(self):
+        with self.assertRaises(TokenNotFoundException):
+            self.service.me()
+
+    @mock.patch('spotipy.Spotify.me')
+    def test_me_with_valid_token(self, mock_spotify_me):
+        self.backend['spotify_token'] = {
+            'access_token': 'random_access_token',
+            'expires_at': int(time.time()) + 3600,
+        }
+
+        mock_spotify_me.return_value = {'type': 'user', 'images': [],
+                                        'uri': 'spotify:user:thesearchingwanderer',
+                                        'id': 'thesearchingwanderer',
+                                        'href': 'https://api.spotify.com/v1/users/thesearchingwanderer',
+                                        'external_urls': {
+                                            'spotify': 'https://open.spotify.com/user/thesearchingwanderer'},
+                                        'followers': {'href': None, 'total': 73}, 'display_name': 'Carlos Rosão'}
+
+        me = self.service.me()
+        self.assertTrue(mock_spotify_me.called)
+
+        self.assertEqual(me, 'thesearchingwanderer')
+
     def test_get_playlist_with_no_token_specified_raises_exception(self):
         username = 'random_user_name'
         playlist_id = 'random_id'

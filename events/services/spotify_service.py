@@ -14,6 +14,13 @@ class SpotifyService:
         self.spotify_oauth = spotify_oauth
         self.backend = backend
 
+    def me(self):
+        spotify = self._get_spotify_connector()
+
+        me = spotify.me()
+
+        return transform_spotify_user_to_thisdayinmusic_user(me)
+
     def get_playlist(self, username, playlist_id):
         spotify = self._get_spotify_connector()
         playlist = spotify.user_playlist(username, playlist_id)
@@ -62,3 +69,7 @@ def transform_spotify_playlist_to_thisdayinmusic_playlist(playlist):
         'id': playlist['id'],
         'url': url_embed
     }
+
+
+def transform_spotify_user_to_thisdayinmusic_user(user):
+    return user['id']
