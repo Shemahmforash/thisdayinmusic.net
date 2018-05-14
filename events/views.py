@@ -57,7 +57,7 @@ def playlist_page(request, month=None, day=None):
     track_ids = _get_track_ids(tracks)
     request.session['tracks'] = track_ids
 
-    playlist = _get_spotify_embed_playlist(request, track_ids, date)
+    playlist = _get_or_create_spotify_playlist(request, track_ids, date)
 
     return render(request, 'playlist.html', {
         'date': date,
@@ -73,19 +73,14 @@ def add_to_spotify(request):
 
 
 def add_to_spotify_callback(request):
-    today = datetime.now().strftime(PLAYLIST_DATE_FORMAT)
     code = request.GET.get('code', None)
 
     if code:
-        tracks = request.session.get('tracks', None)
-
         service = SpotifyService(SPOTIFY_OAUTH, request.session)
         service.create_token(code)
 
         username = service.me()
         request.session['username'] = username
-
-        _create_playlist(request, service, today, tracks, username)
 
         return redirect('playlist')
 
@@ -102,22 +97,25 @@ def _get_date_from_month_day_values(day=None, month=None):
         '{} {} {}'.format(day, month, today.year), '%d %B %Y')
 
 
-def _get_spotify_embed_playlist(request, tracks, requested_date):
-    playlist_id = request.session.get('spotify_playlist_id')
+def _get_or_create_spotify_playlist(request, tracks, requested_date):
+    playlist_id = request.session.get('spotify_playlist_id', None)
     username = request.session.get('username')
 
-    if not all([playlist_id, username]):
+    if not username:
         return None
 
     pretty_date = requested_date.strftime(PLAYLIST_DATE_FORMAT)
-    playlist_date = request.session.get('date')
-
     service = SpotifyService(SPOTIFY_OAUTH, request.session)
 
-    if pretty_date != playlist_date:
-        playlist = _create_playlist(request, service, pretty_date, tracks, username)
+    if playlist_id:
+        playlist_date = request.session.get('date')
+
+        if pretty_date != playlist_date:
+            playlist = _create_playlist(request, service, pretty_date, tracks, username)
+        else:
+            playlist = service.get_playlist(username, playlist_id)
     else:
-        playlist = service.get_playlist(username, playlist_id)
+        playlist = _create_playlist(request, service, pretty_date, tracks, username)
 
     return playlist['url']
 

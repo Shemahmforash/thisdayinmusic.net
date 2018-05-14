@@ -161,17 +161,15 @@ class PagesTest(TestCase):
     @mock.patch('events.services.spotify_service.SpotifyService.create_playlist_with_tracks',
                 return_value={'id': 'random', 'url': 'url'})
     @mock.patch('events.services.spotify_service.SpotifyService.me', return_value={'id': 'some_username'})
-    @mock.patch('events.services.spotify_service.SpotifyService.get_playlist')
     def test_add_to_spotify_callback_page_creates_token_and_redirects_to_playlist(self,
-                                                                                  get_playlist_mock,
-                                                                                  _,
+                                                                                  spotify_me_mock,
                                                                                   create_playlist_with_tracks_mock,
                                                                                   spotify_create_token_mock):
         response = self.client.get('/playlist/create_playlist/callback?code=some_code')
 
         self.assertTrue(spotify_create_token_mock.called)
-        self.assertTrue(create_playlist_with_tracks_mock.called)
+        self.assertTrue(spotify_me_mock.called)
 
         self.assertRedirects(response, '/playlist')
 
-        self.assertTrue(get_playlist_mock.called)
+        self.assertTrue(create_playlist_with_tracks_mock.called)
