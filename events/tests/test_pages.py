@@ -91,7 +91,12 @@ class PagesTest(TestCase):
 
     @mock.patch('events.services.event_service.EventService.playlist')
     @mock.patch('events.services.spotify_service.SpotifyService.get_playlist',
-                return_value={'id': 'random', 'url': 'url'})
+                return_value={
+                    'id': 'random',
+                    'external_urls': {
+                        'spotify': 'url'
+                    }
+                })
     def test_playlist_page_gets_already_generated_playlist(self, spotify_get_playlist_mock, _):
         session = self.client.session
         session['spotify_playlist_id'] = 'xpto'
@@ -109,7 +114,12 @@ class PagesTest(TestCase):
 
     @mock.patch('events.services.event_service.EventService.playlist')
     @mock.patch('events.services.spotify_service.SpotifyService.create_playlist_with_tracks',
-                return_value={'id': 'random', 'url': 'url'})
+                return_value={
+                    'id': 'random',
+                    'external_urls': {
+                        'spotify': 'url'
+                    }
+                })
     def test_playlist_page_creates_playlist_when_date_is_not_the_same_as_generated(self,
                                                                                    create_playlist_with_tracks_mock,
                                                                                    _):
@@ -130,7 +140,12 @@ class PagesTest(TestCase):
 
     @mock.patch('events.services.event_service.EventService.playlist')
     @mock.patch('events.services.spotify_service.SpotifyService.create_playlist_with_tracks',
-                return_value={'id': 'random', 'url': 'url'})
+                return_value={
+                    'id': 'random',
+                    'external_urls': {
+                        'spotify': 'url'
+                    }
+                })
     def test_playlist_page_with_date_creates_playlist_when_date_is_not_the_same_as_generated(self,
                                                                                              create_playlist_with_tracks_mock,
                                                                                              _):
@@ -159,7 +174,12 @@ class PagesTest(TestCase):
 
     @mock.patch('events.services.spotify_service.SpotifyService.create_token')
     @mock.patch('events.services.spotify_service.SpotifyService.create_playlist_with_tracks',
-                return_value={'id': 'random', 'url': 'url'})
+                return_value={
+                    'id': 'random',
+                    'external_urls': {
+                        'spotify': 'url'
+                    }
+                })
     @mock.patch('events.services.spotify_service.SpotifyService.me', return_value={'id': 'some_username'})
     def test_add_to_spotify_callback_page_creates_token_and_redirects_to_playlist(self,
                                                                                   spotify_me_mock,

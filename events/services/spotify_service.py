@@ -2,6 +2,9 @@ import time
 
 import spotipy
 
+from events.transformers.spotify_transformer import transform_spotify_playlist_to_thisdayinmusic_playlist, \
+    transform_spotify_user_to_thisdayinmusic_user
+
 
 class TokenNotFoundException(Exception):
     pass
@@ -23,11 +26,7 @@ class SpotifyService:
 
     def get_playlist(self, username, playlist_id):
         spotify = self._get_spotify_connector()
-        playlist = spotify.user_playlist(username, playlist_id)
-
-        transformed_playlist = transform_spotify_playlist_to_thisdayinmusic_playlist(playlist)
-
-        return transformed_playlist
+        return spotify.user_playlist(username, playlist_id)
 
     def create_playlist_with_tracks(self, username, playlist_name, tracks):
         spotify = self._get_spotify_connector()
@@ -37,7 +36,7 @@ class SpotifyService:
 
         spotify.user_playlist_add_tracks(username, playlist['id'], track_list)
 
-        return transform_spotify_playlist_to_thisdayinmusic_playlist(playlist)
+        return playlist
 
     def create_token(self, code):
         token = self.spotify_oauth.get_access_token(code)
@@ -56,20 +55,3 @@ class SpotifyService:
             self.backend[self.TOKEN_KEY] = token
 
         return spotipy.Spotify(auth=token['access_token'])
-
-
-def convert_playlist_url_to_embed(url):
-    return url.replace('/user/', '/embed/user/')
-
-
-def transform_spotify_playlist_to_thisdayinmusic_playlist(playlist):
-    url_embed = convert_playlist_url_to_embed(playlist['external_urls']['spotify'])
-
-    return {
-        'id': playlist['id'],
-        'url': url_embed
-    }
-
-
-def transform_spotify_user_to_thisdayinmusic_user(user):
-    return user['id']

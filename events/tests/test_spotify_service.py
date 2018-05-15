@@ -44,8 +44,12 @@ class SpotifyServiceTest(TestCase):
         with self.assertRaises(TokenNotFoundException):
             self.service.get_playlist(username, playlist_id)
 
-    @mock.patch('spotipy.Spotify.user_playlist', return_value={'id': 'random_id', 'external_urls': {
-        'spotify': 'https://open.spotify.com/user/random_user_name/playlist/random_id'}})
+    @mock.patch('spotipy.Spotify.user_playlist', return_value={
+        'id': 'random_id',
+        'external_urls': {
+            'spotify': 'https://open.spotify.com/user/random_user_name/playlist/random_id'
+        }
+    })
     def test_get_playlist_with_valid_token(self, user_playlist_mock):
         username = 'random_user_name'
         playlist_id = 'random_id'
@@ -65,11 +69,17 @@ class SpotifyServiceTest(TestCase):
 
         self.assertEqual(playlist, {
             'id': 'random_id',
-            'url': 'https://open.spotify.com/embed/user/random_user_name/playlist/random_id'
+            'external_urls': {
+                'spotify': 'https://open.spotify.com/user/random_user_name/playlist/random_id'
+            }
         })
 
-    @mock.patch('spotipy.Spotify.user_playlist', return_value={'id': 'random_id', 'external_urls': {
-        'spotify': 'https://open.spotify.com/user/random_user_name/playlist/random_id'}})
+    @mock.patch('spotipy.Spotify.user_playlist', return_value={
+        'id': 'random_id',
+        'external_urls': {
+            'spotify': 'https://open.spotify.com/user/random_user_name/playlist/random_id'
+        }
+    })
     @mock.patch('spotipy.oauth2.SpotifyOAuth.refresh_access_token', return_value={
         'access_token': 'new_access_token',
         'expires_at': 1000000
@@ -94,7 +104,9 @@ class SpotifyServiceTest(TestCase):
 
         self.assertEqual(playlist, {
             'id': 'random_id',
-            'url': 'https://open.spotify.com/embed/user/random_user_name/playlist/random_id'
+            'external_urls': {
+                'spotify': 'https://open.spotify.com/user/random_user_name/playlist/random_id'
+            }
         })
 
     @mock.patch('spotipy.Spotify.user_playlist_create', return_value={'id': 'random_id', 'external_urls': {
@@ -126,5 +138,7 @@ class SpotifyServiceTest(TestCase):
 
         self.assertEqual(playlist, {
             'id': 'random_id',
-            'url': 'https://open.spotify.com/embed/user/random_user_name/playlist/random_id'
+            'external_urls': {
+                'spotify': 'https://open.spotify.com/user/random_user_name/playlist/random_id'
+            }
         })

@@ -7,6 +7,9 @@ from django.shortcuts import render, redirect
 
 from events.services.event_service import EventService
 from events.services.spotify_service import SpotifyService
+from events.transformers.event_transformer import transform_event_api_response_to_model_list, \
+    transform_playlist_to_track_list, transform_tracks_to_track_ids_string
+from events.transformers.spotify_transformer import transform_spotify_playlist_to_thisdayinmusic_playlist
 from thisdayinmusic.settings import SPOTIFY_OAUTH
 
 PLAYLIST_DATE_FORMAT = '%A, %d %B %Y'
@@ -22,7 +25,7 @@ def home_page(request):
     pagination = events['response']['pagination']
 
     return render(request, 'home.html', {
-        'events': _transform_api_response_to_model_list(events['response']['events']),
+        'events': transform_event_api_response_to_model_list(events['response']['events']),
         'date': date,
         'current_page': page,
         'pages': _page_range(pagination['total'])
@@ -40,7 +43,7 @@ def events_page(request, month, day):
     pagination = events['response']['pagination']
 
     return render(request, 'home.html', {
-        'events': _transform_api_response_to_model_list(events['response']['events']),
+        'events': transform_event_api_response_to_model_list(events['response']['events']),
         'date': date,
         'current_page': page,
         'pages': _page_range(pagination['total'])
@@ -52,9 +55,10 @@ def playlist_page(request, month=None, day=None):
 
     service = EventService(settings.API_BASE_ADDRESS)
     results = service.playlist(month, day)
-    tracks = results['response']['tracks']
 
-    track_ids = _get_track_ids(tracks)
+    tracks = transform_playlist_to_track_list(results)
+
+    track_ids = transform_tracks_to_track_ids_string(tracks)
     request.session['tracks'] = track_ids
 
     playlist = _get_or_create_spotify_playlist(request, track_ids, date)
@@ -62,7 +66,6 @@ def playlist_page(request, month=None, day=None):
     return render(request, 'playlist.html', {
         'date': date,
         'tracks': tracks,
-        'track_ids': track_ids,
         'playlist': playlist
     })
 
@@ -100,6 +103,7 @@ def _get_date_from_month_day_values(day=None, month=None):
 def _get_or_create_spotify_playlist(request, tracks, requested_date):
     playlist_id = request.session.get('spotify_playlist_id', None)
     username = request.session.get('username')
+    playlist_date = request.session.get('date', None)
 
     if not username:
         return None
@@ -107,13 +111,10 @@ def _get_or_create_spotify_playlist(request, tracks, requested_date):
     pretty_date = requested_date.strftime(PLAYLIST_DATE_FORMAT)
     service = SpotifyService(SPOTIFY_OAUTH, request.session)
 
-    if playlist_id:
-        playlist_date = request.session.get('date')
-
-        if pretty_date != playlist_date:
-            playlist = _create_playlist(request, service, pretty_date, tracks, username)
-        else:
-            playlist = service.get_playlist(username, playlist_id)
+    if playlist_id and pretty_date == playlist_date:
+        playlist = transform_spotify_playlist_to_thisdayinmusic_playlist(
+            service.get_playlist(username, playlist_id)
+        )
     else:
         playlist = _create_playlist(request, service, pretty_date, tracks, username)
 
@@ -123,18 +124,12 @@ def _get_or_create_spotify_playlist(request, tracks, requested_date):
 def _create_playlist(request, service, playlist_date, tracks, username):
     playlist_name = 'Playlist a day for %s' % playlist_date
     playlist = service.create_playlist_with_tracks(username, playlist_name, tracks)
-    request.session['spotify_playlist_id'] = playlist['id']
+
+    simplified_playlist = transform_spotify_playlist_to_thisdayinmusic_playlist(playlist)
+    request.session['spotify_playlist_id'] = simplified_playlist['id']
     request.session['date'] = playlist_date
 
-    return playlist
-
-
-def _get_track_ids(tracks):
-    return ",".join([_remove_spotify_prefix(track) for track in tracks])
-
-
-def _remove_spotify_prefix(track):
-    return track['spotifyId'].rsplit(':', 1)[1]
+    return simplified_playlist
 
 
 def about_page(request):
@@ -147,38 +142,3 @@ def _get_current_page(request):
 
 def _page_range(total):
     return range(1, 1 + ceil(total / EventService.RESULTS_PER_PAGE))
-
-
-def _transform_api_response_to_model_list(events):
-    return [_api_event_to_event_model(event) for event in events]
-
-
-def _api_event_to_event_model(event):
-    name = event.get('name', None)
-
-    return Event(event["date"], event["description"], event["type"], name)
-
-
-class Event(object):
-    TWITTER_MSG_LEN = 140
-    TWITTER_HASH_TAG = "#thisdayinmusic"
-    TWITTER_USER = "@today_in_music"
-
-    def __init__(self, event_date, description, event_type="Event", name=None):
-        self.event_date = event_date
-        self.description = description
-        self.type = event_type
-        self.name = name
-
-        self.twitter_message = self._set_message()
-
-    def _set_message(self):
-        message = '%s - %s' % (self.event_date, self.description)
-
-        if len(message) + len(' ' + self.TWITTER_HASH_TAG) <= self.TWITTER_MSG_LEN:
-            message = '%s %s' % (message, self.TWITTER_HASH_TAG)
-
-        if len(message) + len(' via ' + self.TWITTER_USER) <= self.TWITTER_MSG_LEN:
-            message = '%s via %s' % (message, self.TWITTER_USER)
-
-        return message
