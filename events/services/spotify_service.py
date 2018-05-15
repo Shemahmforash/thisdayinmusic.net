@@ -2,8 +2,7 @@ import time
 
 import spotipy
 
-from events.transformers.spotify_transformer import transform_spotify_playlist_to_thisdayinmusic_playlist, \
-    transform_spotify_user_to_thisdayinmusic_user
+from events.transformers.spotify_transformer import transform_spotify_user_to_thisdayinmusic_user
 
 
 class TokenNotFoundException(Exception):

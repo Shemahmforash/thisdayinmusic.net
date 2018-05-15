@@ -6,6 +6,10 @@ def transform_tracks_to_track_ids_string(tracks):
     return ",".join([_remove_spotify_prefix(track) for track in tracks])
 
 
+def get_pagination_from_events(events):
+    return events['response']['pagination']
+
+
 def _remove_spotify_prefix(track):
     return track['spotifyId'].rsplit(':', 1)[1]
 

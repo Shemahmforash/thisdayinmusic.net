@@ -1,14 +1,16 @@
+from datetime import datetime
 from math import ceil
 
-from datetime import datetime
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseBadRequest
 from django.shortcuts import render, redirect
 
+from events.models import User, Playlist
 from events.services.event_service import EventService
 from events.services.spotify_service import SpotifyService
 from events.transformers.event_transformer import transform_event_api_response_to_model_list, \
-    transform_playlist_to_track_list, transform_tracks_to_track_ids_string
+    transform_playlist_to_track_list, transform_tracks_to_track_ids_string, get_pagination_from_events
 from events.transformers.spotify_transformer import transform_spotify_playlist_to_thisdayinmusic_playlist
 from thisdayinmusic.settings import SPOTIFY_OAUTH
 
@@ -22,7 +24,7 @@ def home_page(request):
     events = service.events(page=page)
     date = datetime.now()
 
-    pagination = events['response']['pagination']
+    pagination = get_pagination_from_events(events)
 
     return render(request, 'home.html', {
         'events': transform_event_api_response_to_model_list(events['response']['events']),
@@ -40,7 +42,7 @@ def events_page(request, month, day):
 
     date = _get_date_from_month_day_values(day, month)
 
-    pagination = events['response']['pagination']
+    pagination = get_pagination_from_events(events)
 
     return render(request, 'home.html', {
         'events': transform_event_api_response_to_model_list(events['response']['events']),
@@ -59,7 +61,6 @@ def playlist_page(request, month=None, day=None):
     tracks = transform_playlist_to_track_list(results)
 
     track_ids = transform_tracks_to_track_ids_string(tracks)
-    request.session['tracks'] = track_ids
 
     playlist = _get_or_create_spotify_playlist(request, track_ids, date)
 
@@ -85,6 +86,10 @@ def add_to_spotify_callback(request):
         username = service.me()
         request.session['username'] = username
 
+        User.objects.update_or_create(
+            username=username,
+        )
+
         return redirect('playlist')
 
     return HttpResponseBadRequest()
@@ -101,35 +106,43 @@ def _get_date_from_month_day_values(day=None, month=None):
 
 
 def _get_or_create_spotify_playlist(request, tracks, requested_date):
-    playlist_id = request.session.get('spotify_playlist_id', None)
     username = request.session.get('username')
-    playlist_date = request.session.get('date', None)
 
     if not username:
         return None
 
-    pretty_date = requested_date.strftime(PLAYLIST_DATE_FORMAT)
+    try:
+        user = User.objects.get(username=username)
+    except ObjectDoesNotExist:
+        return None
+
+    existing_playlist = Playlist.objects.filter(date=requested_date, user=user).first()
+
+    if existing_playlist:
+        return existing_playlist.url
+
+    playlist = _create_playlist(request, requested_date, tracks, username)
+
+    return playlist.url
+
+
+def _create_playlist(request, playlist_date, tracks, username):
     service = SpotifyService(SPOTIFY_OAUTH, request.session)
 
-    if playlist_id and pretty_date == playlist_date:
-        playlist = transform_spotify_playlist_to_thisdayinmusic_playlist(
-            service.get_playlist(username, playlist_id)
-        )
-    else:
-        playlist = _create_playlist(request, service, pretty_date, tracks, username)
-
-    return playlist['url']
-
-
-def _create_playlist(request, service, playlist_date, tracks, username):
-    playlist_name = 'Playlist a day for %s' % playlist_date
+    pretty_date = playlist_date.strftime(PLAYLIST_DATE_FORMAT)
+    playlist_name = 'Playlist a day for %s' % pretty_date
     playlist = service.create_playlist_with_tracks(username, playlist_name, tracks)
 
     simplified_playlist = transform_spotify_playlist_to_thisdayinmusic_playlist(playlist)
-    request.session['spotify_playlist_id'] = simplified_playlist['id']
-    request.session['date'] = playlist_date
 
-    return simplified_playlist
+    user = User.objects.get(username=username)
+    return Playlist.objects.create(
+        spotify_id=simplified_playlist['id'],
+        url=simplified_playlist['url'],
+        user=user,
+        date=playlist_date.date(),
+        track_ids=tracks
+    )
 
 
 def about_page(request):
