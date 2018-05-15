@@ -2,8 +2,6 @@ import time
 
 import spotipy
 
-from events.transformers.spotify_transformer import transform_spotify_user_to_thisdayinmusic_user
-
 
 class TokenNotFoundException(Exception):
     pass
@@ -19,9 +17,7 @@ class SpotifyService:
     def me(self):
         spotify = self._get_spotify_connector()
 
-        me = spotify.me()
-
-        return transform_spotify_user_to_thisdayinmusic_user(me)
+        return spotify.me()
 
     def get_playlist(self, username, playlist_id):
         spotify = self._get_spotify_connector()

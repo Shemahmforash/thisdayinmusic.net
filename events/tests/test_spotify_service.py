@@ -24,18 +24,20 @@ class SpotifyServiceTest(TestCase):
             'expires_at': int(time.time()) + 3600,
         }
 
-        mock_spotify_me.return_value = {'type': 'user', 'images': [],
-                                        'uri': 'spotify:user:thesearchingwanderer',
-                                        'id': 'thesearchingwanderer',
-                                        'href': 'https://api.spotify.com/v1/users/thesearchingwanderer',
-                                        'external_urls': {
-                                            'spotify': 'https://open.spotify.com/user/thesearchingwanderer'},
-                                        'followers': {'href': None, 'total': 73}, 'display_name': 'Carlos Rosão'}
+        return_value = {'type': 'user', 'images': [],
+                        'uri': 'spotify:user:thesearchingwanderer',
+                        'id': 'thesearchingwanderer',
+                        'href': 'https://api.spotify.com/v1/users/thesearchingwanderer',
+                        'external_urls': {
+                            'spotify': 'https://open.spotify.com/user/thesearchingwanderer'},
+                        'followers': {'href': None, 'total': 73}, 'display_name': 'Carlos Rosão'}
+
+        mock_spotify_me.return_value = return_value
 
         me = self.service.me()
         self.assertTrue(mock_spotify_me.called)
 
-        self.assertEqual(me, 'thesearchingwanderer')
+        self.assertEqual(me, return_value)
 
     def test_get_playlist_with_no_token_specified_raises_exception(self):
         username = 'random_user_name'

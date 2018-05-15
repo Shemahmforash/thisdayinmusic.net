@@ -11,7 +11,8 @@ from events.services.event_service import EventService
 from events.services.spotify_service import SpotifyService
 from events.transformers.event_transformer import transform_event_api_response_to_model_list, \
     transform_playlist_to_track_list, transform_tracks_to_track_ids_string, get_pagination_from_events
-from events.transformers.spotify_transformer import transform_spotify_playlist_to_thisdayinmusic_playlist
+from events.transformers.spotify_transformer import transform_spotify_playlist_to_thisdayinmusic_playlist, \
+    transform_spotify_user_to_thisdayinmusic_user
 from thisdayinmusic.settings import SPOTIFY_OAUTH
 
 PLAYLIST_DATE_FORMAT = '%A, %d %B %Y'
@@ -83,7 +84,9 @@ def add_to_spotify_callback(request):
         service = SpotifyService(SPOTIFY_OAUTH, request.session)
         service.create_token(code)
 
-        username = service.me()
+        me = service.me()
+        username = transform_spotify_user_to_thisdayinmusic_user(me)
+
         request.session['username'] = username
 
         User.objects.update_or_create(

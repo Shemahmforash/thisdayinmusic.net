@@ -248,7 +248,7 @@ class PagesTest(TestCase):
                         'spotify': 'url'
                     }
                 })
-    @mock.patch('events.services.spotify_service.SpotifyService.me', return_value='some_username')
+    @mock.patch('events.services.spotify_service.SpotifyService.me', return_value={'id': 'some_username'})
     def test_add_to_spotify_callback_page_creates_token_creates_user_and_redirects_to_playlist(self,
                                                                                                spotify_me_mock,
                                                                                                create_playlist_with_tracks_mock,
@@ -273,7 +273,7 @@ class PagesTest(TestCase):
                         'spotify': 'url'
                     }
                 })
-    @mock.patch('events.services.spotify_service.SpotifyService.me', return_value='some_username')
+    @mock.patch('events.services.spotify_service.SpotifyService.me', return_value={'id': 'some_username'})
     def test_add_to_spotify_callback_page_does_not_create_user_if_it_exists(self, *_):
         User.objects.create(username='some_username')
 
