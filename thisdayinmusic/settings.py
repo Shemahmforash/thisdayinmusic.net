@@ -13,12 +13,9 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 import os
 
 import raven
-from dotenv import load_dotenv
+from decouple import config, Csv
 from os.path import join, dirname
 from spotipy import oauth2
-
-dotenv_path = join(dirname(__file__), '.env')
-load_dotenv(dotenv_path)
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -27,30 +24,33 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = config('SECRET_KEY')
 
-SECURE_CONTENT_TYPE_NOSNIFF = os.environ.get('SECURE_CONTENT_TYPE_NOSNIFF', True)
-SECURE_BROWSER_XSS_FILTER = os.environ.get('SECURE_BROWSER_XSS_FILTER', True)
-SESSION_COOKIE_SECURE = os.environ.get('SESSION_COOKIE_SECURE', True)
-CSRF_COOKIE_SECURE = os.environ.get('CSRF_COOKIE_SECURE', True)
+SECURE_CONTENT_TYPE_NOSNIFF = config('SECURE_CONTENT_TYPE_NOSNIFF', default=False, cast=bool)
+SECURE_BROWSER_XSS_FILTER = config('SECURE_BROWSER_XSS_FILTER', default=False, cast=bool)
+SESSION_COOKIE_SECURE = config('SESSION_COOKIE_SECURE', default=False, cast=bool)
+CSRF_COOKIE_SECURE = config('CSRF_COOKIE_SECURE', default=False, cast=bool)
+SECURE_SSL_REDIRECT = config('SECURE_SSL_REDIRECT', default=False, cast=bool)
+
 X_FRAME_OPTIONS = 'DENY'
 
-API_BASE_ADDRESS = os.environ.get("API_BASE_ADDRESS")
-CLIENT_ID = os.getenv('SPOTIPY_CLIENT_ID')
-CLIENT_SECRET = os.getenv('SPOTIPY_CLIENT_SECRET')
-REDIRECT_URI = os.getenv('SPOTIPY_REDIRECT_URI')
-SPOTIFY_SCOPE = os.getenv('SPOTIFY_SCOPE')
+API_BASE_ADDRESS = config("API_BASE_ADDRESS")
+CLIENT_ID = config('SPOTIPY_CLIENT_ID')
+CLIENT_SECRET = config('SPOTIPY_CLIENT_SECRET')
+REDIRECT_URI = config('SPOTIPY_REDIRECT_URI')
+SPOTIFY_SCOPE = config('SPOTIFY_SCOPE')
 
 SPOTIFY_OAUTH = oauth2.SpotifyOAuth(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, scope=SPOTIFY_SCOPE)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DJANGO_DEBUG', False)
+DEBUG = config('DEBUG', default=False, cast=bool)
 
-ENVIRONMENT = os.getenv('ENVIRONMENT', 'PROD')
+ENVIRONMENT = config('ENVIRONMENT', default='PROD')
 
-ALLOWED_HOSTS = ['127.0.0.1']
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
+CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', cast=Csv())
 
-STATIC_ROOT = os.environ.get("STATIC_ROOT")
+STATIC_ROOT = config("STATIC_ROOT", default='/static')
 
 # Application definition
 
@@ -145,6 +145,6 @@ STATIC_URL = '/static/'
 
 if ENVIRONMENT == 'PROD':
     RAVEN_CONFIG = {
-        'dsn': os.getenv('RAVEN_DSN'),
+        'dsn': config('RAVEN_DSN'),
         'release': raven.fetch_git_sha(os.path.abspath(os.curdir)),
     }
