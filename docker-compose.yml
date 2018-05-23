@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: ./docker/web/Dockerfile
+    command: python /code/manage.py migrate --noinput
+    command: python /code/manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+  selenium-hub:
+    image: selenium/hub:3.12.0-americium
+    container_name: selenium-hub
+    ports:
+      - "4444:4444"
+  chrome:
+    image: selenium/node-chrome:3.12.0-americium
+    depends_on:
+      - selenium-hub
+    environment:
+      - HUB_HOST=selenium-hub
+      - HUB_PORT=4444
+  firefox:
+    image: selenium/node-firefox:3.12.0-americium
+    depends_on:
+      - selenium-hub
+    environment:
+      - HUB_HOST=selenium-hub
+      - HUB_PORT=4444

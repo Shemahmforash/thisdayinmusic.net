@@ -1,19 +1,12 @@
 import requests_mock
 from datetime import datetime
 from django.conf import settings
-from django.test import LiveServerTestCase
-from selenium import webdriver
 
+from functional_tests.selenium_test_case import SeleniumTestCase
 from functional_tests.utils import navbar_active_element_text
 
 
-class MainPageTest(LiveServerTestCase):
-    def setUp(self):
-        self.browser = webdriver.Firefox()
-
-    def tearDown(self):
-        self.browser.quit()
-
+class HomePageTest(SeleniumTestCase):
     @requests_mock.Mocker()
     def test_can_open_main_page(self, m):
         m.get(settings.API_BASE_ADDRESS + '/event/', json={
