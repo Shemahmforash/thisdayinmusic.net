@@ -1,13 +1,8 @@
-from django.test import LiveServerTestCase
-from selenium import webdriver
-
+from functional_tests.selenium_test_case import SeleniumTestCase
 from functional_tests.utils import navbar_active_element_text
 
 
-class AboutPageTest(LiveServerTestCase):
-    def setUp(self):
-        self.browser = webdriver.Firefox()
-
+class AboutPageTest(SeleniumTestCase):
     def tearDown(self):
         self.browser.quit()
 

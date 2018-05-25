@@ -1,16 +1,10 @@
 import requests_mock
 from django.conf import settings
-from django.test import LiveServerTestCase
-from selenium import webdriver
+
+from functional_tests.selenium_test_case import SeleniumTestCase
 
 
-class PaginationTest(LiveServerTestCase):
-    def setUp(self):
-        self.browser = webdriver.Firefox()
-
-    def tearDown(self):
-        self.browser.quit()
-
+class PaginationTest(SeleniumTestCase):
     @requests_mock.Mocker()
     def test_main_page_presents_pagination(self, m):
         m.get(settings.API_BASE_ADDRESS + '/event/', json={

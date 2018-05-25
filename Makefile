@@ -1,6 +1,9 @@
 init:
-	pip install pipenv
-	pipenv install --dev
-	cp thisdayinmusic/.env.example thisdayinmusic/.env
+	docker-compose up -d
+
 test:
-	pipenv run python manage.py test
+	docker-compose run dev sh -c "python manage.py test ${ARGS}"
+
+.PHONY: manage
+manage:
+	docker-compose run --entrypoint "python manage.py ${ARGS}" web

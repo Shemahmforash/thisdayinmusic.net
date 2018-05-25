@@ -3,21 +3,14 @@ import time
 import datetime
 import requests_mock
 from django.conf import settings
-from django.test import LiveServerTestCase
-from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 
 from events.models import User, Playlist
+from functional_tests.selenium_test_case import SeleniumTestCase
 from functional_tests.utils import navbar_active_element_text
 
 
-class PlaylistPageTests(LiveServerTestCase):
-    def setUp(self):
-        self.browser = webdriver.Firefox()
-
-    def tearDown(self):
-        self.browser.quit()
-
+class PlaylistPageTests(SeleniumTestCase):
     @requests_mock.Mocker()
     def test_can_open_playlist_page(self, m):
         m.get(settings.API_BASE_ADDRESS + '/playlist/', json={

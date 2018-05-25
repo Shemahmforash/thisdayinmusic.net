@@ -233,13 +233,15 @@ class PagesTest(TestCase):
         self.assertEqual(new_playlist.spotify_id, 'random')
         self.assertEqual(new_playlist.user.username, 'some_user')
 
+    @mock.patch('events.services.event_service.EventService.playlist')
     @mock.patch('spotipy.oauth2.SpotifyOAuth.get_authorize_url', return_value='/playlist')
-    def test_add_to_spotify_page_redirects_to_spotify_auth(self, spotify_get_oauth_url_mock):
+    def test_add_to_spotify_page_redirects_to_spotify_auth(self, spotify_get_oauth_url_mock, _):
         response = self.client.post('/playlist/create_playlist', {'username': 'random'})
 
         self.assertTrue(spotify_get_oauth_url_mock.called)
         self.assertRedirects(response, '/playlist')
 
+    @mock.patch('events.services.event_service.EventService.playlist')
     @mock.patch('events.services.spotify_service.SpotifyService.create_token')
     @mock.patch('events.services.spotify_service.SpotifyService.create_playlist_with_tracks',
                 return_value={
@@ -252,7 +254,8 @@ class PagesTest(TestCase):
     def test_add_to_spotify_callback_page_creates_token_creates_user_and_redirects_to_playlist(self,
                                                                                                spotify_me_mock,
                                                                                                create_playlist_with_tracks_mock,
-                                                                                               spotify_create_token_mock):
+                                                                                               spotify_create_token_mock,
+                                                                                               _):
         response = self.client.get('/playlist/create_playlist/callback?code=some_code')
 
         self.assertTrue(spotify_create_token_mock.called)
