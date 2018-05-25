@@ -11,6 +11,16 @@ services:
       - .:/code
     ports:
       - "8000:8000"
+
+  dev:
+    build:
+      context: .
+      dockerfile: ./docker/web/Dockerfile
+    command: python pipenv install --dev
+    command: env
+    volumes:
+      - .:/code
+
   selenium-hub:
     image: selenium/hub:3.12.0-americium
     container_name: selenium-hub

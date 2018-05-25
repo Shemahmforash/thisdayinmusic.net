@@ -24,7 +24,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY')
+SECRET_KEY = config('SECRET_KEY', 'secret_key')
 
 SECURE_CONTENT_TYPE_NOSNIFF = config('SECURE_CONTENT_TYPE_NOSNIFF', default=False, cast=bool)
 SECURE_BROWSER_XSS_FILTER = config('SECURE_BROWSER_XSS_FILTER', default=False, cast=bool)
@@ -34,11 +34,11 @@ SECURE_SSL_REDIRECT = config('SECURE_SSL_REDIRECT', default=False, cast=bool)
 
 X_FRAME_OPTIONS = 'DENY'
 
-API_BASE_ADDRESS = config("API_BASE_ADDRESS")
-CLIENT_ID = config('SPOTIPY_CLIENT_ID')
-CLIENT_SECRET = config('SPOTIPY_CLIENT_SECRET')
-REDIRECT_URI = config('SPOTIPY_REDIRECT_URI')
-SPOTIFY_SCOPE = config('SPOTIFY_SCOPE')
+API_BASE_ADDRESS = config("API_BASE_ADDRESS", 'http://localhost')
+CLIENT_ID = config('SPOTIPY_CLIENT_ID', 'client id')
+CLIENT_SECRET = config('SPOTIPY_CLIENT_SECRET', 'client secret')
+REDIRECT_URI = config('SPOTIPY_REDIRECT_URI', 'http://127.0.0.1:8000/callback')
+SPOTIFY_SCOPE = config('SPOTIFY_SCOPE', '')
 
 SPOTIFY_OAUTH = oauth2.SpotifyOAuth(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, scope=SPOTIFY_SCOPE)
 
@@ -47,8 +47,8 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 
 ENVIRONMENT = config('ENVIRONMENT', default='PROD')
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
-CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', cast=Csv())
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv(), default='127.0.0.1')
+CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', cast=Csv(), default='')
 
 STATIC_ROOT = config("STATIC_ROOT", default='/static')
 
@@ -145,6 +145,6 @@ STATIC_URL = '/static/'
 
 if ENVIRONMENT == 'PROD':
     RAVEN_CONFIG = {
-        'dsn': config('RAVEN_DSN'),
+        'dsn': config('RAVEN_DSN', ''),
         'release': raven.fetch_git_sha(os.path.abspath(os.curdir)),
     }
