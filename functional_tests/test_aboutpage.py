@@ -21,3 +21,17 @@ class AboutPageTest(SeleniumTestCase):
 
         active_element = navbar_active_element_text(self.browser)
         self.assertIn("About", active_element)
+
+    def test_link_to_website_repository_is_correct(self):
+        self.browser.get(self.live_server_url + '/about')
+
+        site_link = self.browser.find_element_by_id('sitelink').text
+
+        self.assertEqual(site_link, 'https://github.com/Shemahmforash/thisdayinmusic.net')
+
+    def test_link_to_api_repository_is_correct(self):
+        self.browser.get(self.live_server_url + '/about')
+
+        site_link = self.browser.find_element_by_id('apilink').text
+
+        self.assertEqual(site_link, 'https://github.com/Shemahmforash/api.thisdayinmusic.net')
