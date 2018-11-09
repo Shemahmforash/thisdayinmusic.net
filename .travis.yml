@@ -13,12 +13,5 @@ python:
 
 install: make
 
-addons:
-  sonarcloud:
-    organization: "shemahmforash-github" # the key of the org you chose at step #3
-    token:
-      secure: "e70211494566d3fb82854a3956f1c98453a924e9"  # encrypted value of your token
-
 script:
     - make test
-    - sonar-scanner
