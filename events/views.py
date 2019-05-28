@@ -9,13 +9,19 @@ from django.shortcuts import render, redirect
 from events.models import User, Playlist
 from events.services.event_service import EventService
 from events.services.spotify_service import SpotifyService
-from events.transformers.event_transformer import transform_event_api_response_to_model_list, \
-    transform_playlist_to_track_list, transform_tracks_to_track_ids_string, get_pagination_from_events
-from events.transformers.spotify_transformer import transform_spotify_playlist_to_thisdayinmusic_playlist, \
-    transform_spotify_user_to_thisdayinmusic_user
+from events.transformers.event_transformer import (
+    transform_event_api_response_to_model_list,
+    transform_playlist_to_track_list,
+    transform_tracks_to_track_ids_string,
+    get_pagination_from_events,
+)
+from events.transformers.spotify_transformer import (
+    transform_spotify_playlist_to_thisdayinmusic_playlist,
+    transform_spotify_user_to_thisdayinmusic_user,
+)
 from thisdayinmusic.settings import SPOTIFY_OAUTH
 
-PLAYLIST_DATE_FORMAT = '%A, %d %B %Y'
+PLAYLIST_DATE_FORMAT = "%A, %d %B %Y"
 
 
 def home_page(request):
@@ -27,12 +33,18 @@ def home_page(request):
 
     pagination = get_pagination_from_events(events)
 
-    return render(request, 'home.html', {
-        'events': transform_event_api_response_to_model_list(events['response']['events']),
-        'date': date,
-        'current_page': page,
-        'pages': _page_range(pagination['total'])
-    })
+    return render(
+        request,
+        "home.html",
+        {
+            "events": transform_event_api_response_to_model_list(
+                events["response"]["events"]
+            ),
+            "date": date,
+            "current_page": page,
+            "pages": _page_range(pagination["total"]),
+        },
+    )
 
 
 def events_page(request, month, day):
@@ -45,12 +57,18 @@ def events_page(request, month, day):
 
     pagination = get_pagination_from_events(events)
 
-    return render(request, 'home.html', {
-        'events': transform_event_api_response_to_model_list(events['response']['events']),
-        'date': date,
-        'current_page': page,
-        'pages': _page_range(pagination['total'])
-    })
+    return render(
+        request,
+        "home.html",
+        {
+            "events": transform_event_api_response_to_model_list(
+                events["response"]["events"]
+            ),
+            "date": date,
+            "current_page": page,
+            "pages": _page_range(pagination["total"]),
+        },
+    )
 
 
 def playlist_page(request, month=None, day=None):
@@ -65,11 +83,9 @@ def playlist_page(request, month=None, day=None):
 
     playlist = _get_or_create_spotify_playlist(request, track_ids, date)
 
-    return render(request, 'playlist.html', {
-        'date': date,
-        'tracks': tracks,
-        'playlist': playlist
-    })
+    return render(
+        request, "playlist.html", {"date": date, "tracks": tracks, "playlist": playlist}
+    )
 
 
 def add_to_spotify(request):
@@ -78,7 +94,7 @@ def add_to_spotify(request):
 
 
 def add_to_spotify_callback(request):
-    code = request.GET.get('code', None)
+    code = request.GET.get("code", None)
 
     if code:
         service = SpotifyService(SPOTIFY_OAUTH, request.session)
@@ -87,13 +103,11 @@ def add_to_spotify_callback(request):
         me = service.me()
         username = transform_spotify_user_to_thisdayinmusic_user(me)
 
-        request.session['username'] = username
+        request.session["username"] = username
 
-        User.objects.update_or_create(
-            username=username,
-        )
+        User.objects.update_or_create(username=username)
 
-        return redirect('playlist')
+        return redirect("playlist")
 
     return HttpResponseBadRequest()
 
@@ -104,12 +118,11 @@ def _get_date_from_month_day_values(day=None, month=None):
     if day is None and month is None:
         return today
 
-    return datetime.strptime(
-        '{} {} {}'.format(day, month, today.year), '%d %B %Y')
+    return datetime.strptime("{} {} {}".format(day, month, today.year), "%d %B %Y")
 
 
 def _get_or_create_spotify_playlist(request, tracks, requested_date):
-    username = request.session.get('username')
+    username = request.session.get("username")
 
     if not username:
         return None
@@ -133,27 +146,29 @@ def _create_playlist(request, playlist_date, tracks, username):
     service = SpotifyService(SPOTIFY_OAUTH, request.session)
 
     pretty_date = playlist_date.strftime(PLAYLIST_DATE_FORMAT)
-    playlist_name = 'Playlist a day for %s' % pretty_date
+    playlist_name = "Playlist a day for %s" % pretty_date
     playlist = service.create_playlist_with_tracks(username, playlist_name, tracks)
 
-    simplified_playlist = transform_spotify_playlist_to_thisdayinmusic_playlist(playlist)
+    simplified_playlist = transform_spotify_playlist_to_thisdayinmusic_playlist(
+        playlist
+    )
 
     user = User.objects.get(username=username)
     return Playlist.objects.create(
-        spotify_id=simplified_playlist['id'],
-        url=simplified_playlist['url'],
+        spotify_id=simplified_playlist["id"],
+        url=simplified_playlist["url"],
         user=user,
         date=playlist_date.date(),
-        track_ids=tracks
+        track_ids=tracks,
     )
 
 
 def about_page(request):
-    return render(request, 'about.html')
+    return render(request, "about.html")
 
 
 def _get_current_page(request):
-    return int(request.GET.get('page', 1))
+    return int(request.GET.get("page", 1))
 
 
 def _page_range(total):
